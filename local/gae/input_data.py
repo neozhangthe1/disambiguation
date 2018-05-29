@@ -12,9 +12,9 @@ def encode_labels(labels):
     return list(map(lambda x: classes_dict[x], labels))
 
 
-'''
+"""
 def load_local_data(path=local_na_dir, name='cheng_cheng'):
-    """Load local paper network dataset"""
+    # Load local paper network dataset
     print('Loading {} dataset...'.format(name))
 
     idx_features_labels = np.genfromtxt(join(path, "{}_pubs_content.txt".format(name)), dtype=np.dtype(str))
@@ -36,11 +36,11 @@ def load_local_data(path=local_na_dir, name='cheng_cheng'):
     print('Dataset has {} nodes, {} edges, {} features.'.format(adj.shape[0], edges.shape[0], features.shape[1]))
 
     return adj, features, labels
-'''
+"""
 
 
 def load_local_data(path=local_na_dir, name="cheng_cheng"):
-    """Load citation network dataset (cora only for now)"""
+    # Load citation network dataset (cora only for now)
     print('Loading {} dataset...'.format(name))
 
     # idx_features_labels = np.genfromtxt("{}{}.content".format(path, dataset), dtype=np.dtype(str))
@@ -77,7 +77,7 @@ def load_local_data(path=local_na_dir, name="cheng_cheng"):
 
     print('Dataset has {} nodes, {} edges, {} features.'.format(adj.shape[0], edges.shape[0], features.shape[1]))
 
-    return adj, features, labels, idx
+    return adj, features, labels
 
 
 if __name__ == '__main__':
