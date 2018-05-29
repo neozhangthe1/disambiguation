@@ -3,7 +3,7 @@ from __future__ import print_function
 
 import os
 import time
-from os.path import isfile, join
+from os.path import join
 
 # Train on CPU (hide GPU) due to memory constraints
 os.environ['CUDA_VISIBLE_DEVICES'] = ""
@@ -12,10 +12,6 @@ import codecs
 import tensorflow as tf
 import numpy as np
 import scipy.sparse as sp
-
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import average_precision_score
-from sklearn.metrics import homogeneity_completeness_v_measure
 
 from local.gae.optimizer import OptimizerAE, OptimizerVAE
 from local.gae.input_data import load_local_data
@@ -115,10 +111,13 @@ def gae_for_na(name):
 
     def get_embs():
         feed_dict.update({placeholders['dropout']: 0})
+        emb = sess.run(model.z_mean, feed_dict=feed_dict)
+        '''
         if model_str == 'gcn_ae':
             emb = sess.run(model.z_mean, feed_dict=feed_dict)
         elif model_str == 'gcn_vae':
             emb = sess.run(model.z, feed_dict=feed_dict)
+        '''
         return emb
 
     # Train model
