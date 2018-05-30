@@ -22,7 +22,6 @@ def normalize_vectors(vectors):
     return vectors_norm
 
 
-'''
 def preprocess_graph(adj):  # use original version, adj not contain diags
     adj = sp.coo_matrix(adj)
     adj_ = adj + sp.eye(adj.shape[0])
@@ -51,7 +50,7 @@ def preprocess_graph(adj):
     degree_mat_inv_sqrt = sp.diags(np.power(rowsum, -0.5).flatten())
     adj_normalized = adj_.dot(degree_mat_inv_sqrt).transpose().dot(degree_mat_inv_sqrt).tocoo()
     return sparse_to_tuple(adj_normalized)
-
+'''
 
 def construct_feed_dict(adj_normalized, adj, features, placeholders):
     # construct feed dictionary
