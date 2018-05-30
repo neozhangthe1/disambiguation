@@ -12,7 +12,6 @@ def encode_labels(labels):
     return list(map(lambda x: classes_dict[x], labels))
 
 
-"""
 def load_local_data(path=local_na_dir, name='cheng_cheng'):
     # Load local paper network dataset
     print('Loading {} dataset...'.format(name))
@@ -78,6 +77,7 @@ def load_local_data(path=local_na_dir, name="cheng_cheng"):
     print('Dataset has {} nodes, {} edges, {} features.'.format(adj.shape[0], edges.shape[0], features.shape[1]))
 
     return adj, features, labels
+"""
 
 
 if __name__ == '__main__':
