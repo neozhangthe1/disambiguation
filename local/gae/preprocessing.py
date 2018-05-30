@@ -29,28 +29,7 @@ def preprocess_graph(adj):  # use original version, adj not contain diags
     degree_mat_inv_sqrt = sp.diags(np.power(rowsum, -0.5).flatten())
     adj_normalized = adj_.dot(degree_mat_inv_sqrt).transpose().dot(degree_mat_inv_sqrt).tocoo()
     return sparse_to_tuple(adj_normalized)
-'''
 
-
-def preprocess_graph(adj):
-    adj = sp.coo_matrix(adj)
-    # adj_ = adj + sp.eye(adj.shape[0])
-    adj_dense = np.array(adj.todense())
-    rowmax = np.zeros((adj.shape[0],))
-    for i in range(adj.shape[0]):
-        # print(max(adj_dense[i, :]))
-        rowmax[i] = max(1, max(adj_dense[i, :]))
-        # rowmax_orig = adj.max(axis=1).data
-        # print(rowmax_orig.shape)
-        # for i in range(rowmax.shape[0]):
-        # rowmax[i] = max(1, rowmax_orig[i])
-    # print(adj.shape, rowmax.shape)
-    adj_ = adj + sp.diags(rowmax)
-    rowsum = np.array(adj_.sum(1))
-    degree_mat_inv_sqrt = sp.diags(np.power(rowsum, -0.5).flatten())
-    adj_normalized = adj_.dot(degree_mat_inv_sqrt).transpose().dot(degree_mat_inv_sqrt).tocoo()
-    return sparse_to_tuple(adj_normalized)
-'''
 
 def construct_feed_dict(adj_normalized, adj, features, placeholders):
     # construct feed dictionary

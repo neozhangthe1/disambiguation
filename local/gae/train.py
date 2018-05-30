@@ -18,7 +18,6 @@ from local.gae.input_data import load_local_data
 from local.gae.model import GCNModelAE, GCNModelVAE
 from local.gae.preprocessing import preprocess_graph, construct_feed_dict, \
     sparse_to_tuple, normalize_vectors, gen_train_edges, cal_pos_weight
-# from gae.utils.vis import tsne, plot_scatters, draw_graph
 from utils.cluster import clustering
 from utils.data_utils import load_json
 from utils.eval import pairwise_precision_recall_f1
