@@ -116,7 +116,7 @@ def gae_for_na(name):
 
     def get_embs():
         feed_dict.update({placeholders['dropout']: 0})
-        emb = sess.run(model.z_mean, feed_dict=feed_dict)
+        emb = sess.run(model.z_mean, feed_dict=feed_dict)  # z_mean is better
         '''
         if model_str == 'gcn_ae':
             emb = sess.run(model.z_mean, feed_dict=feed_dict)
@@ -183,7 +183,7 @@ def main():
 
 
 if __name__ == '__main__':
-    gae_for_na('hongbin_liang')
-    gae_for_na('j_yu')
-    gae_for_na('s_yu')
-    # main()
+    # gae_for_na('hongbin_liang')
+    # gae_for_na('j_yu')
+    # gae_for_na('s_yu')
+    main()
