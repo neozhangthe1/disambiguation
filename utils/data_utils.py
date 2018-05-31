@@ -18,3 +18,9 @@ def dump_data(obj, wfpath, wfname):
 def load_data(rfpath, rfname):
     with open(os.path.join(rfpath, rfname), 'rb') as rf:
         return pickle.load(rf)
+
+
+def embedding_loader(path):
+    for line in open(path):
+        x = line.strip().split('\t')  # after id
+        yield x[1]
