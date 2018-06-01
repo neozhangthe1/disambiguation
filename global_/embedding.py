@@ -53,7 +53,7 @@ class EmbeddingModel(object):
 
 
 if __name__ == '__main__':
-    rf_path = join(settings.DATA_DIR, 'global', 'author_features.txt')
+    rf_path = join(settings.DATA_DIR, 'global_', 'author_features.txt')
     wf_name = 'scopus'
     # EmbeddingModel.train(rf_path, wf_name)
     emb_model = EmbeddingModel.load('scopus')

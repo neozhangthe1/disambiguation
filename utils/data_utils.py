@@ -20,6 +20,14 @@ def load_data(rfpath, rfname):
         return pickle.load(rf)
 
 
+def serialize_embedding(embedding):
+    return pickle.dumps(embedding)
+
+
+def deserialize_embedding(s):
+    return pickle.loads(s)
+
+
 def embedding_loader(path):
     for line in open(path):
         x = line.strip().split('\t')  # after id
