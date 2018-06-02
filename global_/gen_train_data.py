@@ -9,9 +9,10 @@ from utils.cache import LMDBClient
 from utils import data_utils
 from utils import settings
 
-LMDB_NAME = "author_100.emb.weighted"
+LMDB_NAME = "scopus_author_100.emb.weighted"
 lc = LMDBClient(LMDB_NAME)
 start_time = datetime.now()
+n_sample_triplets = 0
 
 
 class TripletsGenerator:
@@ -66,7 +67,8 @@ class TripletsGenerator:
                 return pid
 
     def sample_triplet_ids(self, task_q, role='train'):
-        global n_pairs
+        global n_sample_triplets
+        # n_sample_triplets = 0
         name2pubs = {}
         if role == 'train':
             names = self.names_train
@@ -94,9 +96,17 @@ class TripletsGenerator:
                     idx_pos = random.sample(range(cur_n_pubs), n_samples_anchor)
                     for ii, i_pos in enumerate(idx_pos):
                         if i_pos != i:
+                            if n_sample_triplets % 100 == 0:
+                                # print('sampled triplet ids', n_sample_triplets)
+                                pass
                             pid_pos = pids[i_pos]
                             pid_neg = self.gen_neg_pid(pids, role)
+                            n_sample_triplets += 1
                             task_q.put((pid1, pid_pos, pid_neg))
+
+                            if n_sample_triplets > self.train_scale + 500:  # margin
+                                # print('return')
+                                return
 
                             # f1 = lc.get(pid1)
                             # f_pos = lc.get(pid_pos)
@@ -127,14 +137,16 @@ class TripletsGenerator:
         [p.start() for p in producer_p]
         [p.start() for p in consumer_ps]
 
+        cnt = 0
+
         while True:
-            if self.n_triplets % 1000 == 0:
-                print('get', self.n_triplets, datetime.now()-start_time)
+            if cnt % 1000 == 0:
+                print('get', cnt, datetime.now()-start_time)
             emb1, emb_pos, emb_neg = emb_q.get()
             if emb1 is not None and emb_pos is not None and emb_neg is not None:
-                self.n_triplets += 1
+                cnt += 1
                 yield (emb1, emb_pos, emb_neg)
-            if role == 'train' and self.n_triplets >= self.train_scale:
+            if role == 'train' and cnt >= self.train_scale:
                 return
 
     def dump_triplets(self, role='train'):
@@ -167,6 +179,7 @@ class TripletsGenerator:
             data_utils.dump_data(anchor_embs, out_dir, 'anchor_embs_{}_{}.pkl'.format(role, f_idx))
             data_utils.dump_data(pos_embs, out_dir, 'pos_embs_{}_{}.pkl'.format(role, f_idx))
             data_utils.dump_data(neg_embs, out_dir, 'neg_embs_{}_{}.pkl'.format(role, f_idx))
+        print('here')
 
 
 if __name__ == '__main__':
