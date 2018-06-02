@@ -66,7 +66,7 @@ class TripletsGenerator:
             if pid not in not_in_pids:
                 return pid
 
-    def sample_triplet_ids(self, task_q, role='train'):
+    def sample_triplet_ids(self, emb_q, role='train'):
         global n_sample_triplets
         # n_sample_triplets = 0
         name2pubs = {}
@@ -102,9 +102,9 @@ class TripletsGenerator:
                             pid_pos = pids[i_pos]
                             pid_neg = self.gen_neg_pid(pids, role)
                             n_sample_triplets += 1
-                            task_q.put((pid1, pid_pos, pid_neg))
+                            emb_q.put((pid1, pid_pos, pid_neg))
 
-                            if n_sample_triplets > self.train_scale + 500:  # margin
+                            if n_sample_triplets >= self.train_scale:
                                 # print('return')
                                 return
 
@@ -143,9 +143,9 @@ class TripletsGenerator:
             if cnt % 1000 == 0:
                 print('get', cnt, datetime.now()-start_time)
             emb1, emb_pos, emb_neg = emb_q.get()
-            if emb1 is not None and emb_pos is not None and emb_neg is not None:
-                cnt += 1
-                yield (emb1, emb_pos, emb_neg)
+            # if emb1 is not None and emb_pos is not None and emb_neg is not None:
+            cnt += 1
+            yield (emb1, emb_pos, emb_neg)
             if role == 'train' and cnt >= self.train_scale:
                 return
 
