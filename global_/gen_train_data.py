@@ -1,5 +1,6 @@
 from os.path import join
 import os
+import sys
 import codecs
 import json
 import multiprocessing as mp
@@ -67,7 +68,7 @@ class TripletsGenerator:
             if pid not in not_in_pids:
                 return pid
 
-    def sample_triplet_ids(self, emb_q, role='train'):
+    def sample_triplet_ids(self, emb_q, role='train', N_PROC=8):
         global n_sample_triplets
         # n_sample_triplets = 0
         name2pubs = {}
@@ -107,6 +108,8 @@ class TripletsGenerator:
 
                             if n_sample_triplets >= self.train_scale:
                                 # print('return')
+                                for j in range(N_PROC):
+                                    emb_q.put((None, None, None))
                                 return
 
                             # f1 = lc.get(pid1)
@@ -122,6 +125,9 @@ class TripletsGenerator:
     def gen_emb_mp(self, task_q, emb_q):
         while True:
             pid1, pid_pos, pid_neg = task_q.get()
+            if pid1 is None:
+                emb_q.put((False, False, False))
+                return
             emb1 = lc.get(pid1)
             emb_pos= lc.get(pid_pos)
             emb_neg= lc.get(pid_neg)
@@ -133,7 +139,7 @@ class TripletsGenerator:
         task_q = mp.Queue(N_PROC * 3)
         emb_q = mp.Queue(1000)
 
-        producer_p = mp.Process(target=self.sample_triplet_ids, args=(task_q, role))
+        producer_p = mp.Process(target=self.sample_triplet_ids, args=(task_q, role, N_PROC))
         consumer_ps = [mp.Process(target=self.gen_emb_mp, args=(task_q, emb_q)) for _ in range(N_PROC)]
         producer_p.start()
         [p.start() for p in consumer_ps]
@@ -144,11 +150,13 @@ class TripletsGenerator:
             if cnt % 1000 == 0:
                 print('get', cnt, datetime.now()-start_time)
             emb1, emb_pos, emb_neg = emb_q.get()
+            if emb1 is False:
+                break
             # if emb1 is not None and emb_pos is not None and emb_neg is not None:
             cnt += 1
             yield (emb1, emb_pos, emb_neg)
-            if role == 'train' and cnt >= self.train_scale:
-                return
+            # if role == 'train' and cnt >= self.train_scale:
+            #     return
 
     def dump_triplets(self, role='train'):
         triplets = self.gen_triplets_mp(role)
