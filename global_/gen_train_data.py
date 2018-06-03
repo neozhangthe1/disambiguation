@@ -39,6 +39,7 @@ class TripletsGenerator:
         print('names train', len(self.names_train))
         self.names_test = self.name2pubs_test.keys()
         print('names test', len(self.names_test))
+        assert not set(self.names_train).intersection(set(self.names_test))
         for name in self.names_train:
             name_pubs_dict = self.name2pubs_train[name]
             for sid in name_pubs_dict:
