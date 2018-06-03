@@ -60,9 +60,9 @@ def sampler(clusters, k=300, batch_size=10, min=1, max=300, flatten=False):
         else:
             xs.append(np.stack(x))
         ys.append(num_clusters)
-    print('train')
-    print(np.stack(xs))
-    print(np.stack(ys))
+    # print('train')
+    # print(np.stack(xs).shape)
+    # print(np.stack(ys).shape)
     return np.stack(xs), np.stack(ys)
 
 
@@ -77,24 +77,26 @@ def gen_test(k=300, flatten=False):
     for name in name_to_pubs_test:
         num_clusters = len(name_to_pubs_test[name])
         x = []
+        items = []
         for c in name_to_pubs_test[name]:  # one person
-            items = []
             for y, item in name_to_pubs_test[name][c]:
                 items.append(item)
-            sampled_points = [items[p] for p in np.random.choice(len(items), k, replace=True)]
-            for p in sampled_points:
-                if p in data_cache:
-                    x.append(data_cache[p])
-                else:
-                    x.append(lc.get(p))
+        sampled_points = [items[p] for p in np.random.choice(len(items), k, replace=True)]
+        for p in sampled_points:
+            if p in data_cache:
+                x.append(data_cache[p])
+            else:
+                x.append(lc.get(p))
         if flatten:
             xs.append(np.sum(x, axis=0))
         else:
             xs.append(np.stack(x))
         ys.append(num_clusters)
-    print('test')
-    print(xs)
-    print(ys)
+    xs = np.stack(xs)
+    ys = np.stack(ys)
+    # print('test')
+    # print(xs.shape)
+    # print(ys.shape)
     return xs, ys
 
 
@@ -112,6 +114,7 @@ def run_rnn(k=300, seed=1106):
         for pid in c:
             data_cache[pid] = lc.get(pid)
     model = create_model()
+    # print(model.summary())
     model.fit_generator(gen_train(clusters, k=300, batch_size=1000), steps_per_epoch=100, epochs=1000,
                         validation_data=(test_x, test_y))
     kk = model.predict(test_x)
