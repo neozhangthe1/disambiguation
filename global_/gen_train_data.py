@@ -1,8 +1,5 @@
 from os.path import join
 import os
-import sys
-import codecs
-import json
 import multiprocessing as mp
 import random
 from datetime import datetime
@@ -10,10 +7,9 @@ from utils.cache import LMDBClient
 from utils import data_utils
 from utils import settings
 
-LMDB_NAME = "scopus_author_100.emb.weighted"
+LMDB_NAME = "scopus_author_100.emb.weighted"  # name consistent
 lc = LMDBClient(LMDB_NAME)
 start_time = datetime.now()
-n_sample_triplets = 0
 
 
 class TripletsGenerator:
@@ -31,7 +27,7 @@ class TripletsGenerator:
 
     def __init__(self, train_scale=10000):
         self.prepare_data()
-        self.train_scale = train_scale
+        self.save_size = train_scale
 
     def prepare_data(self):
         self.name2pubs_train = data_utils.load_data(self.global_dir, 'name_to_pubs_train_500.pkl')  # for test
@@ -69,16 +65,14 @@ class TripletsGenerator:
                 return pid
 
     def sample_triplet_ids(self, emb_q, role='train', N_PROC=8):
-        global n_sample_triplets
-        # n_sample_triplets = 0
-        name2pubs = {}
+        n_sample_triplets = 0
         if role == 'train':
             names = self.names_train
             name2pubs = self.name2pubs_train
         else:  # test
             names = self.names_test
             name2pubs = self.name2pubs_test
-            # self.save_size = 200000
+            self.save_size = 200000  # test save size
         for name in names:
             name_pubs_dict = name2pubs[name]
             for sid in name_pubs_dict:
@@ -89,8 +83,6 @@ class TripletsGenerator:
                 cur_n_pubs = len(pids)
                 random.shuffle(pids)
                 for i in range(cur_n_pubs):
-                    # if i % 1000 == 0:
-                        # print(i, 'in put papers', n_pairs)
                     pid1 = pids[i]  # pid
 
                     # batch samples
@@ -106,21 +98,12 @@ class TripletsGenerator:
                             n_sample_triplets += 1
                             emb_q.put((pid1, pid_pos, pid_neg))
 
-                            if n_sample_triplets >= self.train_scale:
-                                # print('return')
+                            if n_sample_triplets >= self.save_size:
                                 for j in range(N_PROC):
                                     emb_q.put((None, None, None))
                                 return
-
-                            # f1 = lc.get(pid1)
-                            # f_pos = lc.get(pid_pos)
-                            # f_neg = lc.get(pid_neg)
-                            # if f1 is None or f_pos is None or f_neg is None:
-                            #     continue
-                            # n_pairs += 2
-                            # if n_pairs > self.save_size + 5000:  # margin
-                            #     return
-                            # task_q.put((f1, f_pos, f_neg))
+        for j in range(N_PROC):
+            emb_q.put((None, None, None))
 
     def gen_emb_mp(self, task_q, emb_q):
         while True:
@@ -129,9 +112,10 @@ class TripletsGenerator:
                 emb_q.put((False, False, False))
                 return
             emb1 = lc.get(pid1)
-            emb_pos= lc.get(pid_pos)
-            emb_neg= lc.get(pid_neg)
-            emb_q.put((emb1, emb_pos, emb_neg))
+            emb_pos = lc.get(pid_pos)
+            emb_neg = lc.get(pid_neg)
+            if emb1 is not None and emb_pos is not None and emb_neg is not None:
+                emb_q.put((emb1, emb_pos, emb_neg))
 
     def gen_triplets_mp(self, role='train'):
         N_PROC = 8
@@ -152,16 +136,13 @@ class TripletsGenerator:
             emb1, emb_pos, emb_neg = emb_q.get()
             if emb1 is False:
                 break
-            # if emb1 is not None and emb_pos is not None and emb_neg is not None:
             cnt += 1
             yield (emb1, emb_pos, emb_neg)
-            # if role == 'train' and cnt >= self.train_scale:
-            #     return
 
     def dump_triplets(self, role='train'):
         triplets = self.gen_triplets_mp(role)
         if role == 'train':
-            out_dir = join(settings.OUT_DIR, 'triplets-{}'.format(self.train_scale))
+            out_dir = join(settings.OUT_DIR, 'triplets-{}'.format(self.save_size))
         else:
             out_dir = join(settings.OUT_DIR, 'test-triplets')
         os.makedirs(out_dir, exist_ok=True)
@@ -188,7 +169,7 @@ class TripletsGenerator:
             data_utils.dump_data(anchor_embs, out_dir, 'anchor_embs_{}_{}.pkl'.format(role, f_idx))
             data_utils.dump_data(pos_embs, out_dir, 'pos_embs_{}_{}.pkl'.format(role, f_idx))
             data_utils.dump_data(neg_embs, out_dir, 'neg_embs_{}_{}.pkl'.format(role, f_idx))
-        print('here')
+        print('dumped')
 
 
 if __name__ == '__main__':
