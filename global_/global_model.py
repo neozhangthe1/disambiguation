@@ -21,12 +21,13 @@ class GlobalTripletModel:
         self.test_triplets_dir = join(settings.OUT_DIR, 'test-triplets')
         self.train_triplet_files_num = self.get_triplets_files_num(self.train_triplets_dir)
         self.test_triplet_files_num = self.get_triplets_files_num(self.test_triplets_dir)
+        print('test file num', self.test_triplet_files_num)
 
     @staticmethod
     def get_triplets_files_num(path_dir):
         files = []
         for f in os.listdir(path_dir):
-            if f.startswith('anchor_embs_train'):
+            if f.startswith('anchor_embs_'):
                 files.append(f)
         return len(files)
 
