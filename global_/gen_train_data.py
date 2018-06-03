@@ -30,7 +30,7 @@ class TripletsGenerator:
         self.save_size = train_scale
 
     def prepare_data(self):
-        self.name2pubs_train = data_utils.load_data(self.global_dir, 'name_to_pubs_train_500.pkl')  # for test
+        self.name2pubs_train = data_utils.load_data(self.global_dir, 'name_to_pubs_train.pkl')  # for test
         self.name2pubs_test = data_utils.load_data(self.global_dir, 'name_to_pubs_test.pkl')
         self.names_train = self.name2pubs_train.keys()
         print('names train', len(self.names_train))
@@ -120,7 +120,7 @@ class TripletsGenerator:
     def gen_triplets_mp(self, role='train'):
         N_PROC = 8
 
-        task_q = mp.Queue(N_PROC * 3)
+        task_q = mp.Queue(N_PROC * 6)
         emb_q = mp.Queue(1000)
 
         producer_p = mp.Process(target=self.sample_triplet_ids, args=(task_q, role, N_PROC))
@@ -173,5 +173,5 @@ class TripletsGenerator:
 
 
 if __name__ == '__main__':
-    data_gen = TripletsGenerator()
+    data_gen = TripletsGenerator(train_scale=1000000)
     data_gen.dump_triplets(role='train')
