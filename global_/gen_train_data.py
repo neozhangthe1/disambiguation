@@ -72,7 +72,7 @@ class TripletsGenerator:
         else:  # test
             names = self.names_test
             name2pubs = self.name2pubs_test
-            self.save_size = 200000  # test save size
+            self.save_size = 1000000  # test save size
         for name in names:
             name_pubs_dict = name2pubs[name]
             for sid in name_pubs_dict:
@@ -104,18 +104,20 @@ class TripletsGenerator:
                                 return
         for j in range(N_PROC):
             emb_q.put((None, None, None))
+        print('here1')
 
     def gen_emb_mp(self, task_q, emb_q):
         while True:
             pid1, pid_pos, pid_neg = task_q.get()
             if pid1 is None:
                 emb_q.put((False, False, False))
-                return
+                break
             emb1 = lc.get(pid1)
             emb_pos = lc.get(pid_pos)
             emb_neg = lc.get(pid_neg)
             if emb1 is not None and emb_pos is not None and emb_neg is not None:
                 emb_q.put((emb1, emb_pos, emb_neg))
+        print('here2')
 
     def gen_triplets_mp(self, role='train'):
         N_PROC = 8
@@ -173,5 +175,5 @@ class TripletsGenerator:
 
 
 if __name__ == '__main__':
-    data_gen = TripletsGenerator(train_scale=1000000)
-    data_gen.dump_triplets(role='train')
+    data_gen = TripletsGenerator(train_scale=5000000)
+    data_gen.dump_triplets(role='test')

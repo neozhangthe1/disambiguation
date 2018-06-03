@@ -127,6 +127,7 @@ class GlobalTripletModel:
 
         model_json = model.to_json()
         model_dir = join(settings.OUT_DIR, 'model')
+        os.makedirs(model_dir, exist_ok=True)
         with open(join(model_dir, 'model-triplets-{}.json'.format(self.data_scale)), 'w') as wf:
             wf.write(model_json)
         model.save_weights(join(model_dir, 'model-triplets-{}.h5'.format(self.data_scale)))
