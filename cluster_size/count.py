@@ -60,6 +60,9 @@ def sampler(clusters, k=300, batch_size=10, min=1, max=300, flatten=False):
         else:
             xs.append(np.stack(x))
         ys.append(num_clusters)
+    print('train')
+    print(np.stack(xs))
+    print(np.stack(ys))
     return np.stack(xs), np.stack(ys)
 
 
@@ -89,6 +92,9 @@ def gen_test(k=300, flatten=False):
         else:
             xs.append(np.stack(x))
         ys.append(num_clusters)
+    print('test')
+    print(xs)
+    print(ys)
     return xs, ys
 
 
@@ -101,11 +107,13 @@ def run_rnn(k=300, seed=1106):
         for cluster in domain.values():
             clusters.append([pid for y, pid in cluster])
     for i, c in enumerate(clusters):
-        print(i, len(c), len(clusters))
+        if i % 100 == 0:
+            print(i, len(c), len(clusters))
         for pid in c:
             data_cache[pid] = lc.get(pid)
     model = create_model()
-    model.fit_generator(gen_train(clusters, k=300, batch_size=1000), steps_per_epoch=100, epochs=1000, validation_data=(test_x, test_y))
+    model.fit_generator(gen_train(clusters, k=300, batch_size=1000), steps_per_epoch=100, epochs=1000,
+                        validation_data=(test_x, test_y))
     kk = model.predict(test_x)
 
 
