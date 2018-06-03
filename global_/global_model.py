@@ -1,7 +1,5 @@
 from os.path import join
 import os
-import codecs
-import json
 import numpy as np
 from keras import backend as K
 from keras.models import Model, model_from_json
@@ -113,14 +111,6 @@ class GlobalTripletModel:
         print('loaded')
         model, inter_model = self.create_triplet_model()
         # print(model.summary())
-
-        '''
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(np.concatenate((X1, X2, X3)))
-        X_anchor = X_scaled[: n_triplets]
-        X_pos = X_scaled[n_triplets: 2*n_triplets]
-        X_neg = X_scaled[2*n_triplets:]
-        '''
 
         X_anchor, X_pos, X_neg = X1, X2, X3
         X = {'anchor_input': X_anchor, 'pos_input': X_pos, 'neg_input': X_neg}

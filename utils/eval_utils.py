@@ -44,15 +44,8 @@ def get_hidden_output(model, inp):
 
 
 def predict(anchor_emb, test_embs):
-
-    # anchor_vector = model.get_layer('last_emb_layer').get_weights()[0][anchor_emb]
-    # test_matrix = model.get_layer('last_emb_layer').get_weights()[0][test_embs]
     score1 = np.linalg.norm(anchor_emb-test_embs[0])
     score2 = np.linalg.norm(anchor_emb-test_embs[1])
-
-    # scores = list(np.dot(anchor_vector,
-    #                      test_matrix.T))
-    # print(score1, score2)
     return [score1, score2]
 
 
@@ -69,13 +62,6 @@ def full_auc(model, test_triplets):
     preds_before = []
     embs_anchor, embs_pos, embs_neg = test_triplets
 
-    # test_data = {'anchor_input': embs_anchor, 'pos_input': embs_pos, 'neg_input': embs_neg}
-    # inter_embs_anchor, inter_embs_pos, inter_embs_neg = model.predict(test_data)
-
-    # inter_embs_anchor = model.predict([embs_anchor, embs_pos, embs_neg])
-    # inter_embs_pos = model.predict([embs_pos, embs_neg, embs_anchor])
-    # inter_embs_neg = model.predict([embs_neg, embs_anchor, embs_pos])
-
     inter_embs_anchor = get_hidden_output(model, embs_anchor)
     inter_embs_pos = get_hidden_output(model, embs_pos)
     inter_embs_neg = get_hidden_output(model, embs_neg)
@@ -88,7 +74,6 @@ def full_auc(model, test_triplets):
         if i % 10000 == 0:
             print('test', i)
 
-        # emb_anchor, emb_pos, emb_neg = t
         emb_anchor = e
         emb_pos = inter_embs_pos[i]
         emb_neg = inter_embs_neg[i]
