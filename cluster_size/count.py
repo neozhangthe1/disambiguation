@@ -74,7 +74,9 @@ def gen_train(clusters, k=300, batch_size=1000, flatten=False):
 def gen_test(k=300, flatten=False):
     name_to_pubs_test = data_utils.load_data(global_dir, 'name_to_pubs_test_100.pkl')
     xs, ys = [], []
+    names = []
     for name in name_to_pubs_test:
+        names.append(name)
         num_clusters = len(name_to_pubs_test[name])
         x = []
         items = []
@@ -97,12 +99,12 @@ def gen_test(k=300, flatten=False):
     # print('test')
     # print(xs.shape)
     # print(ys.shape)
-    return xs, ys
+    return names, xs, ys
 
 
 def run_rnn(k=300, seed=1106):
     name_to_pubs_train = data_utils.load_data(global_dir, 'name_to_pubs_train_500.pkl')
-    test_x, test_y = gen_test(k)
+    test_names, test_x, test_y = gen_test(k)
     np.random.seed(seed)
     clusters = []
     for domain in name_to_pubs_train.values():
@@ -115,9 +117,13 @@ def run_rnn(k=300, seed=1106):
             data_cache[pid] = lc.get(pid)
     model = create_model()
     # print(model.summary())
-    model.fit_generator(gen_train(clusters, k=300, batch_size=1000), steps_per_epoch=100, epochs=1000,
+    model.fit_generator(gen_train(clusters, k=300, batch_size=1000), steps_per_epoch=100, epochs=100,
                         validation_data=(test_x, test_y))
     kk = model.predict(test_x)
+    wf = open(join(settings.OUT_DIR, 'n_clusters_rnn.txt'), 'w')
+    for i, name in enumerate(test_names):
+        wf.write('{}\t{}\t{}\n'.format(name, test_y[i], kk[i]))
+    wf.close()
 
 
 if __name__ == '__main__':
