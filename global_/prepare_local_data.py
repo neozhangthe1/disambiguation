@@ -17,7 +17,7 @@ def dump_inter_emb():
     global_model = GlobalTripletModel(data_scale=5000000)
     trained_global_model = global_model.load_triplets_model()
     global_dir = join(settings.DATA_DIR, 'global')
-    name_to_pubs_test = data_utils.load_data(global_dir, 'name_to_pubs_test.pkl')
+    name_to_pubs_test = data_utils.load_data(global_dir, 'name_to_pubs_test_100.pkl')
     for name in name_to_pubs_test:
         print('name', name)
         name_data = name_to_pubs_test[name]
