@@ -14,7 +14,7 @@ def dump_inter_emb():
     lc_input = LMDBClient(LMDB_NAME)
     INTER_LMDB_NAME = 'scopus_author_triplets.emb'
     lc_inter = LMDBClient(INTER_LMDB_NAME)
-    global_model = GlobalTripletModel(data_scale=5000000)
+    global_model = GlobalTripletModel(data_scale=1000000)
     trained_global_model = global_model.load_triplets_model()
     global_dir = join(settings.DATA_DIR, 'global')
     name_to_pubs_test = data_utils.load_data(global_dir, 'name_to_pubs_test_100.pkl')
@@ -90,12 +90,13 @@ def gen_local_data(idf_threshold=10):
                 idf_sum = 0
                 for f in common_features:
                     idf_sum += idf.get(f, idf_threshold)
+                    # print(f, idf.get(f, idf_threshold))
                 if idf_sum >= idf_threshold:
                     wf_network.write('{}\t{}\n'.format(pids[i], pids[j]))
         wf_network.close()
 
 
 if __name__ == '__main__':
-    dump_inter_emb()
-    # gen_local_data()
+    # dump_inter_emb()
+    gen_local_data()
     print('done')
