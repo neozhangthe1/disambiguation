@@ -35,7 +35,7 @@ def dump_inter_emb():
         embs_input = np.stack(embs_input)
         inter_embs = get_hidden_output(trained_global_model, embs_input)
         for i, pid_ in enumerate(pids):
-            lc_inter.set(pid_, inter_embs)
+            lc_inter.set(pid_, inter_embs[i])
 
 
 def gen_local_data(idf_threshold=10):
@@ -96,6 +96,6 @@ def gen_local_data(idf_threshold=10):
 
 
 if __name__ == '__main__':
-    # dump_inter_emb()
-    gen_local_data()
+    dump_inter_emb()
+    # gen_local_data()
     print('done')
