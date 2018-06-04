@@ -13,40 +13,18 @@ start_time = datetime.now()
 
 
 def put_papers(task_q, N_PROC):
-    pubs_train = data_utils.load_data(global_dir, 'pubs_raw_train.pkl')
-    pubs_test = data_utils.load_data(global_dir, 'pubs_raw_test.pkl')
-    pubs_dict = {**pubs_test, **pubs_train}
-    print('loaded')
-    st = datetime.now()
-    for i, pid in enumerate(pubs_dict):
-        if i % 100 == 0:
-            et = datetime.now()
-            print('put paper', i, et - st)
-            st = deepcopy(et)
-        paper = pubs_dict[pid]
+    for i, paper in enumerate(data_utils.pubs_load_generator()):
         n_authors = len(paper.get('authors', []))
         for j in range(n_authors):
             task_q.put((paper, j))
-    '''
-    for i, paper in enumerate(data_utils.pubs_load_generator()):
-        if i % 100 == 0:
-            et = datetime.now()
-            print('put paper', i, et - st)
-            st = et
-    '''
     for _ in range(N_PROC):
         task_q.put((None, None))
 
 
 def cal_author_features(task_q, feature_q):
-    st = datetime.now()
     cnt = 0
     while True:
         paper, order = task_q.get()
-        if cnt % 100 == 0:
-            et = datetime.now()
-            print('extract features', cnt, et - st)
-            st = deepcopy(et)
         if paper is None:
             feature_q.put((None, None))
             break
@@ -75,8 +53,7 @@ def dump_author_features():
     while True:
         if cnt % 100 == 0:
             et = datetime.now()
-            print('dump features', cnt, et - st)
-            print('paper cnt', cnt, datetime.now()-start_time)
+            print('paper cnt', cnt, 'timedelta', et - st, 'total time', datetime.now()-start_time)
             st = deepcopy(et)
         pid_order, feature = feature_q.get()
         if pid_order is None:
@@ -108,6 +85,6 @@ def dump_author_embs():
 
 
 if __name__ == '__main__':
-    # dump_author_features()
-    dump_author_embs()
-    print('done')
+    dump_author_features()
+    # dump_author_embs()
+    print('done', datetime.now()-start_time)

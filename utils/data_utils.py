@@ -38,8 +38,8 @@ def embedding_loader(path):
 
 
 def pubs_load_generator():
-    name_to_pubs_train = load_data(global_dir, 'pubs_raw_train.pkl')
-    name_to_pubs_test = load_data(global_dir, 'pubs_raw_test.pkl')
-    name_to_pubs = {**name_to_pubs_test, **name_to_pubs_train}
-    for pid in name_to_pubs:
-        yield name_to_pubs[pid]
+    pubs_train = load_data(global_dir, 'pubs_raw_train.pkl')
+    pubs_test = load_data(global_dir, 'pubs_raw_test.pkl')
+    pubs_dict = {**pubs_test, **pubs_train}
+    for pid in pubs_dict:
+        yield pubs_dict[pid]
