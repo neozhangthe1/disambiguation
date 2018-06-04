@@ -64,7 +64,7 @@ class TripletsGenerator:
             if pid not in not_in_pids:
                 return pid
 
-    def sample_triplet_ids(self, emb_q, role='train', N_PROC=8):
+    def sample_triplet_ids(self, task_q, role='train', N_PROC=8):
         n_sample_triplets = 0
         if role == 'train':
             names = self.names_train
@@ -96,14 +96,14 @@ class TripletsGenerator:
                             pid_pos = pids[i_pos]
                             pid_neg = self.gen_neg_pid(pids, role)
                             n_sample_triplets += 1
-                            emb_q.put((pid1, pid_pos, pid_neg))
+                            task_q.put((pid1, pid_pos, pid_neg))
 
                             if n_sample_triplets >= self.save_size:
                                 for j in range(N_PROC):
-                                    emb_q.put((None, None, None))
+                                    task_q.put((None, None, None))
                                 return
         for j in range(N_PROC):
-            emb_q.put((None, None, None))
+            task_q.put((None, None, None))
         print('here1')
 
     def gen_emb_mp(self, task_q, emb_q):

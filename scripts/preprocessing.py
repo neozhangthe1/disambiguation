@@ -1,6 +1,4 @@
 from os.path import join
-import codecs
-import json
 from global_.embedding import EmbeddingModel
 from utils.cache import LMDBClient
 from utils import data_utils
@@ -11,10 +9,11 @@ global_dir = join(settings.DATA_DIR, 'global')
 
 
 def pubs_load_generator():
-    pubs_fname = 'pubs_features_raw.txt'
-    with codecs.open(join(global_dir, pubs_fname), 'r', encoding='utf-8') as rf:
-        for line in rf:
-            yield json.loads(line)
+    name_to_pubs_train = data_utils.load_data(global_dir, 'pubs_raw_train.pkl')
+    name_to_pubs_test = data_utils.load_data(global_dir, 'pubs_raw_test.pkl')
+    name_to_pubs = {**name_to_pubs_test, **name_to_pubs_train}
+    for pid in name_to_pubs:
+        yield name_to_pubs[pid]
 
 
 def dump_author_features_lmdb():
