@@ -4,6 +4,7 @@ from gensim.models import Word2Vec
 import numpy as np
 import random
 from utils import data_utils
+from utils import feature_utils
 from utils import settings
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -16,12 +17,16 @@ class EmbeddingModel(object):
         self.name = name
 
     @staticmethod
-    def train(rf_path, wf_name, size=50):
+    def train(wf_name, size=50):
         data = []
-        for d in data_utils.embedding_loader(rf_path):
-            doc = d.split()
-            random.shuffle(doc)
-            data.append(doc)
+        for i, paper in enumerate(data_utils.pubs_load_generator()):
+            if i % 100 == 0:
+                print('paper cnt', i)
+            author_features = feature_utils.extract_author_features(paper)
+            for f in author_features:
+                random.shuffle(f)
+                print(f)
+                data.append(f)
         model = Word2Vec(
             data, size=size, window=50, min_count=5, workers=20,
         )
@@ -53,8 +58,8 @@ class EmbeddingModel(object):
 
 
 if __name__ == '__main__':
-    rf_path = join(settings.DATA_DIR, 'global', 'author_features.txt')
+    # rf_path = join(settings.DATA_DIR, 'global', 'author_features.txt')
     wf_name = 'scopus'
-    EmbeddingModel.train(rf_path, wf_name)
+    EmbeddingModel.train(wf_name)
     # emb_model = EmbeddingModel.load('scopus')
     print('loaded')

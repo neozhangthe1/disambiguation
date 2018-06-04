@@ -8,21 +8,13 @@ from utils import settings
 global_dir = join(settings.DATA_DIR, 'global')
 
 
-def pubs_load_generator():
-    name_to_pubs_train = data_utils.load_data(global_dir, 'pubs_raw_train.pkl')
-    name_to_pubs_test = data_utils.load_data(global_dir, 'pubs_raw_test.pkl')
-    name_to_pubs = {**name_to_pubs_test, **name_to_pubs_train}
-    for pid in name_to_pubs:
-        yield name_to_pubs[pid]
-
-
 def dump_author_features_lmdb():
     emb_model = EmbeddingModel.load('scopus')
     cnt = 0
     idf = data_utils.load_data(global_dir, 'feature_idf.pkl')
     LMDB_NAME = "author_100.emb.weighted"
     lc = LMDBClient(LMDB_NAME)
-    for paper in pubs_load_generator():
+    for paper in data_utils.pubs_load_generator():
         if not "title" in paper or not "authors" in paper:
             continue
         if len(paper["authors"]) > 30:

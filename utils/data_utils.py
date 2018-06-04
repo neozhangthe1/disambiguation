@@ -3,6 +3,9 @@ import json
 from os.path import join
 import pickle
 import os
+from utils import settings
+
+global_dir = join(settings.DATA_DIR, 'global')
 
 
 def load_json(rfdir, rfname):
@@ -32,3 +35,11 @@ def embedding_loader(path):
     for line in open(path):
         x = line.strip().split('\t')  # after id
         yield x[1]
+
+
+def pubs_load_generator():
+    name_to_pubs_train = load_data(global_dir, 'pubs_raw_train.pkl')
+    name_to_pubs_test = load_data(global_dir, 'pubs_raw_test.pkl')
+    name_to_pubs = {**name_to_pubs_test, **name_to_pubs_train}
+    for pid in name_to_pubs:
+        yield name_to_pubs[pid]
