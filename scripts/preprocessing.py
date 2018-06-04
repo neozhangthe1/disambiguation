@@ -55,7 +55,7 @@ def dump_author_features():
         cnt += 1
 
 
-def dump_author_features_lmdb():
+def dump_author_embs():
     emb_model = EmbeddingModel.load('scopus')
     cnt = 0
     idf = data_utils.load_data(global_dir, 'feature_idf.pkl')
@@ -78,6 +78,6 @@ def dump_author_features_lmdb():
 
 
 if __name__ == '__main__':
-    # dump_author_features_lmdb()
-    dump_author_features()
+    # dump_author_features()
+    dump_author_embs()
     print('done')
