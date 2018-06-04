@@ -24,9 +24,10 @@ def dump_author_features_lmdb():
         if cnt % 1000 == 0:
             print(cnt, paper["sid"], len(paper["authors"]))
         cnt += 1
-        author_features = feature_utils.extract_author_features(paper)
-        for i, f in enumerate(author_features):
-            lc.set("%s-%s" % (paper["sid"], i), emb_model.project_embedding(f, idf))
+        for i, author in enumerate(paper.get('authors', [])):
+            author_feature = feature_utils.extract_author_features(paper, i)
+            print(author_feature)
+            lc.set("%s-%s" % (paper["sid"], i), emb_model.project_embedding(author_feature, idf))
 
 
 if __name__ == '__main__':

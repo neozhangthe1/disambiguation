@@ -2,6 +2,7 @@ from os.path import join
 from collections import defaultdict as dd
 import math
 from itertools import chain
+from utils.cache import LMDBClient
 from utils import string_utils
 from utils import data_utils
 from utils import settings
@@ -59,6 +60,18 @@ def extract_author_features(item, order=None):
         )
     author_features = list(chain.from_iterable(author_features))
     return author_features
+
+
+def dump_author_features():
+    LMDB_NAME = 'pub_authors.feature'
+    lc = LMDBClient(LMDB_NAME)
+    for i, paper in enumerate(data_utils.pubs_load_generator()):
+        if i % 100 == 0:
+            print('paper cnt', i)
+        for j, a in enumerate(paper.get('authors', [])):
+            author_feature = extract_author_features(paper, j)
+            print(author_feature)
+            lc.set('{}-{}'.format(paper['sid'], j), author_feature)
 
 
 def cal_feature_idf():
