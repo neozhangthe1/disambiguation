@@ -12,13 +12,24 @@ start_time = datetime.now()
 
 
 def put_papers(task_q, N_PROC):
+    name_to_pubs_train = data_utils.load_data(global_dir, 'pubs_raw_train.pkl')
+    name_to_pubs_test = data_utils.load_data(global_dir, 'pubs_raw_test.pkl')
+    name_to_pubs = {**name_to_pubs_test, **name_to_pubs_train}
+    print('loaded')
     st = datetime.now()
+    for i, pid in enumerate(name_to_pubs):
+        if i % 100 == 0:
+            et = datetime.now()
+            print('put paper', i, et - st)
+            st = et
+        task_q.put(name_to_pubs[pid])
+    '''
     for i, paper in enumerate(data_utils.pubs_load_generator()):
         if i % 100 == 0:
             et = datetime.now()
             print('put paper', i, et - st)
             st = et
-        task_q.put(paper)
+    '''
     for _ in range(N_PROC):
         task_q.put(None)
 
@@ -43,9 +54,9 @@ def cal_author_features(task_q, feature_q):
 
 
 def dump_author_features():
-    N_PROC = 100
+    N_PROC = 50
 
-    task_q = mp.Queue(N_PROC * 6)
+    task_q = mp.Queue(1000)
     feature_q = mp.Queue(1000)
 
     producer_p = mp.Process(target=put_papers, args=(task_q, N_PROC))
