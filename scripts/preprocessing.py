@@ -67,8 +67,10 @@ def dump_author_embs():
     cnt = 0
     idf = data_utils.load_data(global_dir, 'feature_idf.pkl')
     print('idf loaded')
-    LMDB_NAME = "author_100.emb.weighted"
-    lc = LMDBClient(LMDB_NAME)
+    LMDB_NAME_FEATURE = 'pub_authors_test.feature'
+    lc_feature = LMDBClient(LMDB_NAME_FEATURE)
+    LMDB_NAME_EMB = "author_100.emb.weighted"
+    lc_emb = LMDBClient(LMDB_NAME_EMB)
     for paper in data_utils.pubs_load_generator():
         if not "title" in paper or not "authors" in paper:
             continue
@@ -76,12 +78,13 @@ def dump_author_embs():
             print(cnt, paper["sid"], len(paper["authors"]))
         if len(paper["authors"]) > 100:
             continue
-        if cnt % 1000 == 0:
-            print(cnt, paper["sid"], len(paper["authors"]))
+        if cnt % 100 == 0:
+            print('paper count', cnt, paper["sid"], len(paper["authors"]))
         cnt += 1
         for i, author in enumerate(paper.get('authors', [])):
-            author_feature = feature_utils.extract_author_features(paper, i)
-            lc.set("%s-%s" % (paper["sid"], i), emb_model.project_embedding(author_feature, idf))
+            # author_feature = feature_utils.extract_author_features(paper, i)
+            author_feature = lc_feature.get('{}-{}'.format(paper['sid'], i))
+            lc_emb.set("%s-%s" % (paper["sid"], i), emb_model.project_embedding(author_feature, idf))
 
 
 if __name__ == '__main__':
