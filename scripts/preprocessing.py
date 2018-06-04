@@ -71,6 +71,11 @@ def dump_author_embs():
     lc_feature = LMDBClient(LMDB_NAME_FEATURE)
     LMDB_NAME_EMB = "author_100.emb.weighted"
     lc_emb = LMDBClient(LMDB_NAME_EMB)
+    N_PROC = 50
+    task_q = mp.Queue(1000)
+    emb_q = mp.Queue(1000)
+    consumer_ps = [mp.Process(target=emb_model.project_embedding, args=(task_q, emb_q)) for _ in range(N_PROC)]
+    [p.start() for p in consumer_ps]
     for paper in data_utils.pubs_load_generator():
         if not "title" in paper or not "authors" in paper:
             continue
@@ -84,6 +89,8 @@ def dump_author_embs():
         for i, author in enumerate(paper.get('authors', [])):
             # author_feature = feature_utils.extract_author_features(paper, i)
             author_feature = lc_feature.get('{}-{}'.format(paper['sid'], i))
+            # TODO
+            task_q.put()
             lc_emb.set("%s-%s" % (paper["sid"], i), emb_model.project_embedding(author_feature, idf))
 
 

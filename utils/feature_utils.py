@@ -92,6 +92,13 @@ def cal_feature_idf():
     feature_dir = join(settings.DATA_DIR, 'global_')
     counter = dd(int)
     cnt = 0
+    LMDB_NAME = 'pub_authors.feature'
+    lc = LMDBClient(LMDB_NAME)
+    with lc.db.begin() as txn:
+        for k in txn.cursor():
+            print(k[0])
+            print(k[1])
+    '''
     for line in open(join(feature_dir, 'author_features.txt')):
         x = line.split("\t")
         if cnt % 1000 == 0:
@@ -103,6 +110,7 @@ def cal_feature_idf():
     for k in counter:
         idf[k] = math.log(cnt / counter[k])
     data_utils.dump_data(dict(idf), feature_dir, "feature_idf.pkl")
+    '''
 
 
 if __name__ == '__main__':
