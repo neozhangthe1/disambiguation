@@ -13,17 +13,20 @@ start_time = datetime.now()
 
 
 def put_papers(task_q, N_PROC):
-    name_to_pubs_train = data_utils.load_data(global_dir, 'pubs_raw_train.pkl')
-    name_to_pubs_test = data_utils.load_data(global_dir, 'pubs_raw_test.pkl')
-    name_to_pubs = {**name_to_pubs_test, **name_to_pubs_train}
+    pubs_train = data_utils.load_data(global_dir, 'pubs_raw_train.pkl')
+    pubs_test = data_utils.load_data(global_dir, 'pubs_raw_test.pkl')
+    pubs_dict = {**pubs_test, **pubs_train}
     print('loaded')
     st = datetime.now()
-    for i, pid in enumerate(name_to_pubs):
+    for i, pid in enumerate(pubs_dict):
         if i % 100 == 0:
             et = datetime.now()
             print('put paper', i, et - st)
             st = deepcopy(et)
-        task_q.put(name_to_pubs[pid])
+        paper = pubs_dict[pid]
+        n_authors = len(paper.get('authors', []))
+        for j in range(n_authors):
+            task_q.put((paper, j))
     '''
     for i, paper in enumerate(data_utils.pubs_load_generator()):
         if i % 100 == 0:
@@ -32,14 +35,14 @@ def put_papers(task_q, N_PROC):
             st = et
     '''
     for _ in range(N_PROC):
-        task_q.put(None)
+        task_q.put((None, None))
 
 
 def cal_author_features(task_q, feature_q):
     st = datetime.now()
     cnt = 0
     while True:
-        paper = task_q.get()
+        paper, order = task_q.get()
         if cnt % 100 == 0:
             et = datetime.now()
             print('extract features', cnt, et - st)
@@ -48,10 +51,8 @@ def cal_author_features(task_q, feature_q):
             feature_q.put((None, None))
             break
         cnt += 1
-        n_authors = len(paper.get('authors', []))
-        author_features = [feature_utils.extract_author_features(paper, j) for j in range(n_authors)]
-        for j in range(n_authors):
-            feature_q.put(('{}-{}'.format(paper['sid'], j), author_features[j]))
+        author_feature = feature_utils.extract_author_features(paper, order)
+        feature_q.put(('{}-{}'.format(paper['sid'], order), author_feature))
 
 
 def dump_author_features():
