@@ -2,6 +2,7 @@ from os.path import join
 import multiprocessing as mp
 from global_.embedding import EmbeddingModel
 from datetime import datetime
+from copy import deepcopy
 from utils.cache import LMDBClient
 from utils import data_utils
 from utils import feature_utils
@@ -21,7 +22,7 @@ def put_papers(task_q, N_PROC):
         if i % 100 == 0:
             et = datetime.now()
             print('put paper', i, et - st)
-            st = et
+            st = deepcopy(et)
         task_q.put(name_to_pubs[pid])
     '''
     for i, paper in enumerate(data_utils.pubs_load_generator()):
@@ -42,7 +43,7 @@ def cal_author_features(task_q, feature_q):
         if cnt % 100 == 0:
             et = datetime.now()
             print('extract features', cnt, et - st)
-            st = et
+            st = deepcopy(et)
         if paper is None:
             feature_q.put((None, None))
             break
@@ -75,7 +76,7 @@ def dump_author_features():
             et = datetime.now()
             print('dump features', cnt, et - st)
             print('paper cnt', cnt, datetime.now()-start_time)
-            st = et
+            st = deepcopy(et)
         pid_order, feature = feature_q.get()
         if pid_order is None:
             break
