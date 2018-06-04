@@ -131,6 +131,12 @@ class GlobalTripletModel:
         print('triplets model loaded')
         auc_score = eval_utils.full_auc(loaded_model, test_triplets)
 
+    def evaluate_triplet_model(self):
+        test_triplets = self.load_triplets_data(role='test')
+        loaded_model = self.load_triplets_model()
+        print('triplets model loaded')
+        auc_score = eval_utils.full_auc(loaded_model, test_triplets)
+
 
 if __name__ == '__main__':
     global_model = GlobalTripletModel(data_scale=1000000)
