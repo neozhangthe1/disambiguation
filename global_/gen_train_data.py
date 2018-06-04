@@ -74,35 +74,34 @@ class TripletsGenerator:
             name2pubs = self.name2pubs_test
             self.save_size = 200000  # test save size
         for name in names:
-            for _ in range(N_PROC):  # augment
-                name_pubs_dict = name2pubs[name]
-                for sid in name_pubs_dict:
-                    pub_items = name_pubs_dict[sid]
-                    if len(pub_items) == 1:
-                        continue
-                    pids = [item[1] for item in pub_items]
-                    cur_n_pubs = len(pids)
-                    random.shuffle(pids)
-                    for i in range(cur_n_pubs):
-                        pid1 = pids[i]  # pid
+            name_pubs_dict = name2pubs[name]
+            for sid in name_pubs_dict:
+                pub_items = name_pubs_dict[sid]
+                if len(pub_items) == 1:
+                    continue
+                pids = [item[1] for item in pub_items]
+                cur_n_pubs = len(pids)
+                random.shuffle(pids)
+                for i in range(cur_n_pubs):
+                    pid1 = pids[i]  # pid
 
-                        # batch samples
-                        n_samples_anchor = min(6, cur_n_pubs)
-                        idx_pos = random.sample(range(cur_n_pubs), n_samples_anchor)
-                        for ii, i_pos in enumerate(idx_pos):
-                            if i_pos != i:
-                                if n_sample_triplets % 100 == 0:
-                                    # print('sampled triplet ids', n_sample_triplets)
-                                    pass
-                                pid_pos = pids[i_pos]
-                                pid_neg = self.gen_neg_pid(pids, role)
-                                n_sample_triplets += 1
-                                emb_q.put((pid1, pid_pos, pid_neg))
+                    # batch samples
+                    n_samples_anchor = min(6, cur_n_pubs)
+                    idx_pos = random.sample(range(cur_n_pubs), n_samples_anchor)
+                    for ii, i_pos in enumerate(idx_pos):
+                        if i_pos != i:
+                            if n_sample_triplets % 100 == 0:
+                                # print('sampled triplet ids', n_sample_triplets)
+                                pass
+                            pid_pos = pids[i_pos]
+                            pid_neg = self.gen_neg_pid(pids, role)
+                            n_sample_triplets += 1
+                            emb_q.put((pid1, pid_pos, pid_neg))
 
-                                if n_sample_triplets >= self.save_size:
-                                    for j in range(N_PROC):
-                                        emb_q.put((None, None, None))
-                                    return
+                            if n_sample_triplets >= self.save_size:
+                                for j in range(N_PROC):
+                                    emb_q.put((None, None, None))
+                                return
         for j in range(N_PROC):
             emb_q.put((None, None, None))
         print('here1')
