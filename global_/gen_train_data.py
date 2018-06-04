@@ -110,13 +110,13 @@ class TripletsGenerator:
         while True:
             pid1, pid_pos, pid_neg = task_q.get()
             if pid1 is None:
-                emb_q.put((False, False, False))
                 break
             emb1 = lc.get(pid1)
             emb_pos = lc.get(pid_pos)
             emb_neg = lc.get(pid_neg)
             if emb1 is not None and emb_pos is not None and emb_neg is not None:
                 emb_q.put((emb1, emb_pos, emb_neg))
+        emb_q.put((False, False, False))
         print('here2')
 
     def gen_triplets_mp(self, role='train'):
