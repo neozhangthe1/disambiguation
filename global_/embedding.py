@@ -22,10 +22,11 @@ class EmbeddingModel(object):
         for i, paper in enumerate(data_utils.pubs_load_generator()):
             if i % 100 == 0:
                 print('paper cnt', i)
-            author_features = feature_utils.extract_author_features(paper)
-            random.shuffle(author_features)
-            print(author_features)
-            data.append(author_features)
+            for i, a in enumerate(paper.get('authors', [])):
+                author_feature = feature_utils.extract_author_features(paper, i)
+                random.shuffle(author_feature)
+                print(author_feature)
+                data.append(author_feature)
         model = Word2Vec(
             data, size=size, window=50, min_count=5, workers=20,
         )
