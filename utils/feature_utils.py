@@ -2,6 +2,7 @@ from os.path import join
 from collections import defaultdict as dd
 import math
 from multiprocessing import Pool
+from datetime import datetime
 from itertools import chain
 from utils.cache import LMDBClient
 from utils import string_utils
@@ -73,14 +74,16 @@ def dump_batch_author_features(paper):
 
 
 def dump_author_features():
-    pool = Pool(16)
+    pool = Pool(32)
     batch_papers = []
+    start_time = datetime.now()
     for i, paper in enumerate(data_utils.pubs_load_generator()):
         if i % 100 == 0:
-            print('paper cnt', i)
+            print('paper cnt', i, datetime.now()-start_time)
         if len(batch_papers) % 100 == 0:
             pool.map(dump_batch_author_features, batch_papers)
             batch_papers = []
+        batch_papers.append(paper)
     pool.map(dump_batch_author_features, batch_papers)
     print('done')
 
