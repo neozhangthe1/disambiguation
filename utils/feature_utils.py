@@ -1,6 +1,7 @@
 from os.path import join
 from collections import defaultdict as dd
 import math
+from multiprocessing import Pool
 from itertools import chain
 from utils.cache import LMDBClient
 from utils import string_utils
@@ -62,16 +63,26 @@ def extract_author_features(item, order=None):
     return author_features
 
 
-def dump_author_features():
+def dump_batch_author_features(paper):
     LMDB_NAME = 'pub_authors.feature'
     lc = LMDBClient(LMDB_NAME)
+    n_authors = len(paper.get('authors', []))
+    author_features = [extract_author_features(paper, j) for j in range(n_authors)]
+    for j in range(n_authors):
+        lc.set('{}-{}'.format(paper['sid'], j), author_features[j])
+
+
+def dump_author_features():
+    pool = Pool(16)
+    batch_papers = []
     for i, paper in enumerate(data_utils.pubs_load_generator()):
         if i % 100 == 0:
             print('paper cnt', i)
-        for j, a in enumerate(paper.get('authors', [])):
-            author_feature = extract_author_features(paper, j)
-            print(author_feature)
-            lc.set('{}-{}'.format(paper['sid'], j), author_feature)
+        if len(batch_papers) % 100 == 0:
+            pool.map(dump_batch_author_features, batch_papers)
+            batch_papers = []
+    pool.map(dump_batch_author_features, batch_papers)
+    print('done')
 
 
 def cal_feature_idf():
@@ -92,4 +103,5 @@ def cal_feature_idf():
 
 
 if __name__ == '__main__':
-    cal_feature_idf()
+    # cal_feature_idf()
+    dump_author_features()
