@@ -3,8 +3,7 @@ import numpy as np
 import scipy.sparse as sp
 from utils import settings
 
-# local_na_dir = join(settings.DATA_DIR, 'local', 'na')
-local_na_dir = join(settings.DATA_DIR, 'graph-10')
+local_na_dir = join(settings.DATA_DIR, 'local', 'na')
 
 
 def encode_labels(labels):
