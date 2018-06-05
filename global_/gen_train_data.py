@@ -7,7 +7,7 @@ from utils.cache import LMDBClient
 from utils import data_utils
 from utils import settings
 
-LMDB_NAME = "scopus_author_100.emb.weighted"  # name consistent
+LMDB_NAME = "author_100.emb.weighted"  # name consistent
 lc = LMDBClient(LMDB_NAME)
 start_time = datetime.now()
 

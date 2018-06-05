@@ -139,13 +139,11 @@ def dump_author_embs():
     cnt = 0
     with lc_feature.db.begin() as txn:
         for k in txn.cursor():
-            if cnt % 100 == 0:
+            if cnt % 1000 == 0:
                 print('cnt', cnt)
             cnt += 1
             pid_order = k[0].decode('utf-8')
-            print(pid_order)
             features = data_utils.deserialize_embedding(k[1])
-            print(features)
             lc_emb.set(pid_order, emb_model.project_embedding(features, idf))
     '''
     for paper in data_utils.pubs_load_generator():
