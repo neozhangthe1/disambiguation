@@ -8,6 +8,7 @@ from utils import feature_utils
 from utils import settings
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+EMB_DIM = 50
 
 
 class EmbeddingModel(object):
@@ -17,7 +18,7 @@ class EmbeddingModel(object):
         self.name = name
 
     @staticmethod
-    def train(wf_name, size=50):
+    def train(wf_name, size=EMB_DIM):
         data = []
         for i, paper in enumerate(data_utils.pubs_load_generator()):
             if i % 100 == 0:

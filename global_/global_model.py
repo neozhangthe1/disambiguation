@@ -6,6 +6,7 @@ from keras.models import Model, model_from_json
 from keras.layers import Dense, concatenate, Input, merge, Lambda
 from keras.optimizers import Adagrad, Adam
 from global_.triplet import l2Norm, euclidean_distance, triplet_loss, accuracy
+from global_.embedding import EMB_DIM
 from utils import eval_utils
 from utils import data_utils
 from utils import settings
@@ -40,9 +41,9 @@ class GlobalTripletModel:
         return X1, X2, X3
 
     def load_triplets_data(self, role='train'):
-        X1 = np.empty([0, 100])
-        X2 = np.empty([0, 100])
-        X3 = np.empty([0, 100])
+        X1 = np.empty([0, EMB_DIM])
+        X2 = np.empty([0, EMB_DIM])
+        X3 = np.empty([0, EMB_DIM])
         if role == 'train':
             f_num = self.train_triplet_files_num
         else:
@@ -61,9 +62,9 @@ class GlobalTripletModel:
 
     @staticmethod
     def create_triplet_model():
-        emb_anchor = Input(shape=(100, ), name='anchor_input')
-        emb_pos = Input(shape=(100, ), name='pos_input')
-        emb_neg = Input(shape=(100, ), name='neg_input')
+        emb_anchor = Input(shape=(EMB_DIM, ), name='anchor_input')
+        emb_pos = Input(shape=(EMB_DIM, ), name='pos_input')
+        emb_neg = Input(shape=(EMB_DIM, ), name='neg_input')
 
         # shared layers
         layer1 = Dense(128, activation='relu', name='first_emb_layer')

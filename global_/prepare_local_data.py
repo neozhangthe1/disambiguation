@@ -10,9 +10,9 @@ from utils import settings
 
 
 def dump_inter_emb():
-    LMDB_NAME = "scopus_author_100.emb.weighted"
+    LMDB_NAME = "author_100.emb.weighted"
     lc_input = LMDBClient(LMDB_NAME)
-    INTER_LMDB_NAME = 'scopus_author_triplets.emb'
+    INTER_LMDB_NAME = 'author_triplets.emb'
     lc_inter = LMDBClient(INTER_LMDB_NAME)
     global_model = GlobalTripletModel(data_scale=1000000)
     trained_global_model = global_model.load_triplets_model()
@@ -41,9 +41,9 @@ def dump_inter_emb():
 def gen_local_data(idf_threshold=10):
     global_dir = join(settings.DATA_DIR, 'global')
     name_to_pubs_test = data_utils.load_data(global_dir, 'name_to_pubs_test_100.pkl')
-    INTER_LMDB_NAME = 'scopus_author_triplets.emb'
+    INTER_LMDB_NAME = 'author_triplets.emb'
     lc_inter = LMDBClient(INTER_LMDB_NAME)
-    LMDB_AUTHOR_FEATURE = "scopus_author_100.feature"
+    LMDB_AUTHOR_FEATURE = "pub_authors.feature"
     lc_feature = LMDBClient(LMDB_AUTHOR_FEATURE)
     idf = data_utils.load_data(global_dir, 'feature_idf.pkl')
     graph_dir = join(settings.DATA_DIR, 'graph-{}'.format(idf_threshold))
@@ -93,10 +93,11 @@ def gen_local_data(idf_threshold=10):
                     # print(f, idf.get(f, idf_threshold))
                 if idf_sum >= idf_threshold:
                     wf_network.write('{}\t{}\n'.format(pids[i], pids[j]))
+        break
         wf_network.close()
 
 
 if __name__ == '__main__':
     # dump_inter_emb()
-    gen_local_data()
+    gen_local_data(idf_threshold=17)
     print('done')
