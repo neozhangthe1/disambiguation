@@ -129,7 +129,8 @@ def dump_author_embs():
     print('idf loaded')
     LMDB_NAME_FEATURE = 'pub_authors.feature'
     lc_feature = LMDBClient(LMDB_NAME_FEATURE)
-    LMDB_NAME_EMB = "author_100.emb.weighted"
+    LMDB_NAME_EMB = "author_100.emb"
+    # LMDB_NAME_EMB = "author_100.emb.weighted"
     lc_emb = LMDBClient(LMDB_NAME_EMB)
     # N_PROC = 50
     # task_q = mp.Queue(1000)
@@ -140,11 +141,12 @@ def dump_author_embs():
     with lc_feature.db.begin() as txn:
         for k in txn.cursor():
             if cnt % 1000 == 0:
-                print('cnt', cnt)
+                print('cnt', cnt, datetime.now()-start_time)
             cnt += 1
             pid_order = k[0].decode('utf-8')
             features = data_utils.deserialize_embedding(k[1])
-            lc_emb.set(pid_order, emb_model.project_embedding(features, idf))
+            # lc_emb.set(pid_order, emb_model.project_embedding(features, idf))
+            lc_emb.set(pid_order, emb_model.project_embedding(features))
     '''
     for paper in data_utils.pubs_load_generator():
         if not "title" in paper or not "authors" in paper:
@@ -167,6 +169,6 @@ def dump_author_embs():
 
 if __name__ == '__main__':
     # dump_author_features_to_file()
-    cal_feature_idf()
-    # dump_author_embs()
+    # cal_feature_idf()
+    dump_author_embs()
     print('done', datetime.now()-start_time)
