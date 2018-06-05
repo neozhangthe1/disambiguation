@@ -1,4 +1,5 @@
 from os.path import join
+import codecs
 import multiprocessing as mp
 from global_.embedding import EmbeddingModel
 from datetime import datetime
@@ -60,6 +61,24 @@ def dump_author_features():
             break
         lc.set(pid_order, feature)
         cnt += 1
+
+
+def dump_author_features_to_file():
+    pubs_train = data_utils.load_data(global_dir, 'pubs_raw_train.pkl')
+    pubs_test = data_utils.load_data(global_dir, 'pubs_raw_test.pkl')
+    pubs_dict = {**pubs_test, **pubs_train}
+    print('n_papers', len(pubs_dict))
+    wf = codecs.open(join(global_dir, 'author_features.txt'), 'w', encoding='utf-8')
+    for i, pid in enumerate(pubs_dict):
+        if i % 100 == 0:
+            print(i, datetime.now()-start_time)
+        paper = pubs_dict[pid]
+        n_authors = len(paper.get('authors', []))
+        for j in range(n_authors):
+            author_feature = feature_utils.extract_author_features(paper, j)
+            aid = '{}-{}'.format(paper['sid'], j)
+            wf.write(aid + '\t' + ' '.join(author_feature) + '\n')
+    wf.close()
 
 
 def dump_author_embs():
