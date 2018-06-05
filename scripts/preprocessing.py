@@ -84,9 +84,15 @@ def dump_author_features_to_file():
     print('n_papers', len(pubs_dict))
     wf = codecs.open(join(global_dir, 'author_features.txt'), 'w', encoding='utf-8')
     for i, pid in enumerate(pubs_dict):
-        if i % 100 == 0:
+        if i % 1000 == 0:
             print(i, datetime.now()-start_time)
         paper = pubs_dict[pid]
+        if "title" not in paper or "authors" not in paper:
+            continue
+        if len(paper["authors"]) > 30:
+            print(i, paper["sid"], len(paper["authors"]))
+        if len(paper["authors"]) > 100:
+            continue
         n_authors = len(paper.get('authors', []))
         for j in range(n_authors):
             author_feature = feature_utils.extract_author_features(paper, j)
@@ -128,6 +134,6 @@ def dump_author_embs():
 
 
 if __name__ == '__main__':
-    dump_author_features()
+    dump_author_features_to_file()
     # dump_author_embs()
     print('done', datetime.now()-start_time)
