@@ -1,6 +1,8 @@
 from os.path import join
 import codecs
+import math
 import multiprocessing as mp
+from collections import defaultdict as dd
 from global_.embedding import EmbeddingModel
 from datetime import datetime
 from copy import deepcopy
@@ -35,7 +37,7 @@ def cal_author_features(task_q, feature_q):
 
 
 def dump_author_features_to_cache():
-    LMDB_NAME = 'pub_authors_test2.feature'
+    LMDB_NAME = 'pub_authors.feature'
     lc = LMDBClient(LMDB_NAME)
     with codecs.open(join(global_dir, 'author_features.txt'), 'r', encoding='utf-8') as rf:
         for i, line in enumerate(rf):
@@ -43,9 +45,7 @@ def dump_author_features_to_cache():
                 print('line', i)
             items = line.rstrip().split('\t')
             pid_order = items[0]
-            print(pid_order)
             author_features = items[1].split()
-            print(author_features)
             lc.set(pid_order, author_features)
     '''
     N_PROC = 50
@@ -101,6 +101,28 @@ def dump_author_features_to_file():
     wf.close()
 
 
+def cal_feature_idf():
+    feature_dir = join(settings.DATA_DIR, 'global')
+    counter = dd(int)
+    cnt = 0
+    LMDB_NAME = 'pub_authors.feature'
+    lc = LMDBClient(LMDB_NAME)
+    author_cnt = 0
+    with lc.db.begin() as txn:
+        for k in txn.cursor():
+            features = data_utils.deserialize_embedding(k[1])
+            if author_cnt % 10000 == 0:
+                print(author_cnt, features[0], counter.get(features[0]))
+            author_cnt += 1
+            for f in features:
+                cnt += 1
+                counter[f] += 1
+    idf = {}
+    for k in counter:
+        idf[k] = math.log(cnt / counter[k])
+    data_utils.dump_data(dict(idf), feature_dir, "feature_idf.pkl")
+
+
 def dump_author_embs():
     emb_model = EmbeddingModel.load('scopus')
     cnt = 0
@@ -134,6 +156,7 @@ def dump_author_embs():
 
 
 if __name__ == '__main__':
-    dump_author_features_to_file()
+    # dump_author_features_to_file()
+    cal_feature_idf()
     # dump_author_embs()
     print('done', datetime.now()-start_time)

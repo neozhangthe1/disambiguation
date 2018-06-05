@@ -88,44 +88,4 @@ def dump_author_features():
     print('done')
 
 
-def cal_feature_idf():
-    feature_dir = join(settings.DATA_DIR, 'global_')
-    counter = dd(int)
-    cnt = 0
-    LMDB_NAME = 'pub_authors.feature'
-    lc = LMDBClient(LMDB_NAME)
-    author_cnt = 0
-    with lc.db.begin() as txn:
-        for k in txn.cursor():
-            # print(k[0])
-            # print(data_utils.deserialize_embedding(k[1]))
-            features = data_utils.deserialize_embedding(k[1])
-            if author_cnt % 10000 == 0:
-                print(author_cnt, features[0], counter.get(features[0]))
-            author_cnt += 1
-            for f in features:
-                # if cnt % 1000 == 0:
-                #     print(cnt, counter.get(f), author_cnt)
-                cnt += 1
-                counter[f] += 1
-                # print(f)
-                # print(counter[f])
-    '''
-    for line in open(join(feature_dir, 'author_features.txt')):
-        x = line.split("\t")
-        if cnt % 1000 == 0:
-            print(cnt, x[0], len(counter))
-        for f in set(x[1].split()):
-            counter[f] += 1
-        cnt += 1
-    '''
-    idf = {}
-    for k in counter:
-        idf[k] = math.log(cnt / counter[k])
-    data_utils.dump_data(dict(idf), feature_dir, "feature_idf.pkl")
 
-
-if __name__ == '__main__':
-    cal_feature_idf()
-    # dump_author_features()
-    print('done')
