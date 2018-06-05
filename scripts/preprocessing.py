@@ -125,18 +125,29 @@ def cal_feature_idf():
 
 def dump_author_embs():
     emb_model = EmbeddingModel.load('scopus')
-    cnt = 0
     idf = data_utils.load_data(global_dir, 'feature_idf.pkl')
     print('idf loaded')
-    LMDB_NAME_FEATURE = 'pub_authors_test.feature'
+    LMDB_NAME_FEATURE = 'pub_authors.feature'
     lc_feature = LMDBClient(LMDB_NAME_FEATURE)
     LMDB_NAME_EMB = "author_100.emb.weighted"
     lc_emb = LMDBClient(LMDB_NAME_EMB)
-    N_PROC = 50
-    task_q = mp.Queue(1000)
-    emb_q = mp.Queue(1000)
-    consumer_ps = [mp.Process(target=emb_model.project_embedding, args=(task_q, emb_q)) for _ in range(N_PROC)]
-    [p.start() for p in consumer_ps]
+    # N_PROC = 50
+    # task_q = mp.Queue(1000)
+    # emb_q = mp.Queue(1000)
+    # consumer_ps = [mp.Process(target=emb_model.project_embedding, args=(task_q, emb_q)) for _ in range(N_PROC)]
+    # [p.start() for p in consumer_ps]
+    cnt = 0
+    with lc_feature.db.begin() as txn:
+        for k in txn.cursor():
+            if cnt % 100 == 0:
+                print('cnt', cnt)
+            cnt += 1
+            pid_order = k[0].decode('utf-8')
+            print(pid_order)
+            features = data_utils.deserialize_embedding(k[1])
+            print(features)
+            lc_emb.set(pid_order, emb_model.project_embedding(features, idf))
+    '''
     for paper in data_utils.pubs_load_generator():
         if not "title" in paper or not "authors" in paper:
             continue
@@ -153,6 +164,7 @@ def dump_author_embs():
             # TODO
             task_q.put()
             lc_emb.set("%s-%s" % (paper["sid"], i), emb_model.project_embedding(author_feature, idf))
+    '''
 
 
 if __name__ == '__main__':
