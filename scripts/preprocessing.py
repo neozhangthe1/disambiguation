@@ -34,7 +34,20 @@ def cal_author_features(task_q, feature_q):
         feature_q.put(('{}-{}'.format(paper['sid'], order), author_feature))
 
 
-def dump_author_features():
+def dump_author_features_to_cache():
+    LMDB_NAME = 'pub_authors_test2.feature'
+    lc = LMDBClient(LMDB_NAME)
+    with codecs.open(join(global_dir, 'author_features.txt'), 'r', encoding='utf-8') as rf:
+        for i, line in enumerate(rf):
+            if i % 1000 == 0:
+                print('line', i)
+            items = line.rstrip().split('\t')
+            pid_order = items[0]
+            print(pid_order)
+            author_features = items[1].split()
+            print(author_features)
+            lc.set(pid_order, author_features)
+    '''
     N_PROC = 50
 
     task_q = mp.Queue(1000)
@@ -61,6 +74,7 @@ def dump_author_features():
             break
         lc.set(pid_order, feature)
         cnt += 1
+    '''
 
 
 def dump_author_features_to_file():
