@@ -8,7 +8,7 @@ from utils import feature_utils
 from utils import settings
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
-EMB_DIM = 50
+EMB_DIM = 100
 
 
 class EmbeddingModel(object):
@@ -20,13 +20,24 @@ class EmbeddingModel(object):
     @staticmethod
     def train(wf_name, size=EMB_DIM):
         data = []
+        '''
         for i, paper in enumerate(data_utils.pubs_load_generator()):
             if i % 100 == 0:
                 print('paper cnt', i)
             for i, a in enumerate(paper.get('authors', [])):
                 author_feature = feature_utils.extract_author_features(paper, i)
+        '''
+        LMDB_NAME = 'pub_authors.feature'
+        lc = LMDBClient(LMDB_NAME)
+        author_cnt = 0
+        with lc.db.begin() as txn:
+            for k in txn.cursor():
+                author_feature = data_utils.deserialize_embedding(k[1])
+                if author_cnt % 10000 == 0:
+                    print(author_cnt, author_feature[0])
+                author_cnt += 1
                 random.shuffle(author_feature)
-                print(author_feature)
+                # print(author_feature)
                 data.append(author_feature)
         model = Word2Vec(
             data, size=size, window=50, min_count=5, workers=20,

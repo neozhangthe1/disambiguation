@@ -168,7 +168,9 @@ def dump_author_embs():
 
 
 if __name__ == '__main__':
-    # dump_author_features_to_file()
-    # cal_feature_idf()
+    dump_author_features_to_file()
+    dump_author_features_to_cache()
+    EmbeddingModel.train('scopus')
+    cal_feature_idf()
     dump_author_embs()
     print('done', datetime.now()-start_time)
