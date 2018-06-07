@@ -137,6 +137,12 @@ class TripletsGenerator:
                 print('get', cnt, datetime.now()-start_time)
             emb1, emb_pos, emb_neg = emb_q.get()
             if emb1 is False:
+                print('here3')
+                producer_p.terminate()
+                producer_p.join()
+                [p.terminate() for p in consumer_ps]
+                [p.join() for p in consumer_ps]
+                print('here4')
                 break
             cnt += 1
             yield (emb1, emb_pos, emb_neg)
