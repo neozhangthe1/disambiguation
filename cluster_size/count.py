@@ -9,7 +9,7 @@ from utils.cache import LMDBClient
 from utils import data_utils
 from utils import settings
 
-LMDB_NAME = "scopus_author_100.emb.weighted"
+LMDB_NAME = "author_100.emb.weighted"
 lc = LMDBClient(LMDB_NAME)
 global_dir = join(settings.DATA_DIR, 'global')
 
@@ -61,6 +61,7 @@ def sampler(clusters, k=300, batch_size=10, min=1, max=300, flatten=False):
             xs.append(np.stack(x))
         ys.append(num_clusters)
     # print('train')
+    # print('-----------------')
     # print(np.stack(xs).shape)
     # print(np.stack(ys).shape)
     return np.stack(xs), np.stack(ys)
@@ -117,12 +118,12 @@ def run_rnn(k=300, seed=1106):
             data_cache[pid] = lc.get(pid)
     model = create_model()
     # print(model.summary())
-    model.fit_generator(gen_train(clusters, k=300, batch_size=1000), steps_per_epoch=100, epochs=100,
+    model.fit_generator(gen_train(clusters, k=300, batch_size=1000), steps_per_epoch=100, epochs=1000,
                         validation_data=(test_x, test_y))
     kk = model.predict(test_x)
     wf = open(join(settings.OUT_DIR, 'n_clusters_rnn.txt'), 'w')
     for i, name in enumerate(test_names):
-        wf.write('{}\t{}\t{}\n'.format(name, test_y[i], kk[i]))
+        wf.write('{}\t{}\t{}\n'.format(name, test_y[i], kk[i][0]))
     wf.close()
 
 
