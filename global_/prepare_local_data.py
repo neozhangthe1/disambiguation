@@ -47,8 +47,8 @@ def gen_local_data(idf_threshold=10):
     LMDB_AUTHOR_FEATURE = "pub_authors.feature"
     lc_feature = LMDBClient(LMDB_AUTHOR_FEATURE)
     idf = data_utils.load_data(global_dir, 'feature_idf.pkl')
-    # graph_dir = join(settings.DATA_DIR, 'graph-{}'.format(idf_threshold))
-    graph_dir = join(settings.DATA_DIR, 'graph-orig-emb-{}'.format(idf_threshold))
+    graph_dir = join(settings.DATA_DIR, 'local', 'graph-{}'.format(idf_threshold))
+    # graph_dir = join(settings.DATA_DIR, 'graph-orig-emb-{}'.format(idf_threshold))
     os.makedirs(graph_dir, exist_ok=True)
     for i, name in enumerate(name_to_pubs_test):
         print(i, name)
@@ -95,11 +95,10 @@ def gen_local_data(idf_threshold=10):
                     # print(f, idf.get(f, idf_threshold))
                 if idf_sum >= idf_threshold:
                     wf_network.write('{}\t{}\n'.format(pids[i], pids[j]))
-        break
         wf_network.close()
 
 
 if __name__ == '__main__':
-    # dump_inter_emb()
+    dump_inter_emb()
     gen_local_data(idf_threshold=20)
     print('done')
