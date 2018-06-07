@@ -8,6 +8,8 @@ from utils.cache import LMDBClient
 from utils import data_utils
 from utils import settings
 
+IDF_THRESHOLD = 20
+
 
 def dump_inter_emb():
     LMDB_NAME = "author_100.emb.weighted"
@@ -100,5 +102,5 @@ def gen_local_data(idf_threshold=10):
 
 if __name__ == '__main__':
     dump_inter_emb()
-    gen_local_data(idf_threshold=20)
+    gen_local_data(idf_threshold=IDF_THRESHOLD)
     print('done')

@@ -2,11 +2,13 @@ from os.path import join
 import numpy as np
 import scipy.sparse as sp
 from utils import settings
+from global_.prepare_local_data import IDF_THRESHOLD
 
 # local_na_dir = join(settings.DATA_DIR, 'local', 'na')
 # local_na_dir = join(settings.DATA_DIR, 'graph-20')
 # local_na_dir = join(settings.DATA_DIR, 'graph-orig-emb-20')
-local_na_dir = join(settings.DATA_DIR, 'new-local', 'graph-10')
+# local_na_dir = join(settings.DATA_DIR, 'new-local', 'graph-10')
+local_na_dir = join(settings.DATA_DIR, 'local', 'graph-{}'.format(IDF_THRESHOLD))
 
 
 def encode_labels(labels):
