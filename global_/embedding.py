@@ -3,8 +3,8 @@ from os.path import join
 from gensim.models import Word2Vec
 import numpy as np
 import random
+from utils.cache import LMDBClient
 from utils import data_utils
-from utils import feature_utils
 from utils import settings
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
