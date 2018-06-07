@@ -176,4 +176,4 @@ class TripletsGenerator:
 
 if __name__ == '__main__':
     data_gen = TripletsGenerator(train_scale=1000000)
-    data_gen.dump_triplets(role='train')
+    data_gen.dump_triplets(role='test')

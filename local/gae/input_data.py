@@ -4,7 +4,9 @@ import scipy.sparse as sp
 from utils import settings
 
 # local_na_dir = join(settings.DATA_DIR, 'local', 'na')
-local_na_dir = join(settings.DATA_DIR, 'graph-17')
+# local_na_dir = join(settings.DATA_DIR, 'graph-20')
+# local_na_dir = join(settings.DATA_DIR, 'graph-orig-emb-20')
+local_na_dir = join(settings.DATA_DIR, 'new-local', 'graph-10')
 
 
 def encode_labels(labels):
@@ -15,7 +17,7 @@ def encode_labels(labels):
 
 def load_local_data(path=local_na_dir, name='cheng_cheng'):
     # Load local paper network dataset
-    print('Loading {} dataset...'.format(name))
+    print('Loading {} dataset...'.format(name), 'path=', path)
 
     idx_features_labels = np.genfromtxt(join(path, "{}_pubs_content.txt".format(name)), dtype=np.dtype(str))
     features = np.array(idx_features_labels[:, 1:-1], dtype=np.float32)  # sparse?

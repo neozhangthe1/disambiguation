@@ -41,12 +41,14 @@ def dump_inter_emb():
 def gen_local_data(idf_threshold=10):
     global_dir = join(settings.DATA_DIR, 'global')
     name_to_pubs_test = data_utils.load_data(global_dir, 'name_to_pubs_test_100.pkl')
-    INTER_LMDB_NAME = 'author_triplets.emb'
+    # INTER_LMDB_NAME = 'author_triplets.emb'
+    INTER_LMDB_NAME = 'author_100.emb.weighted'
     lc_inter = LMDBClient(INTER_LMDB_NAME)
     LMDB_AUTHOR_FEATURE = "pub_authors.feature"
     lc_feature = LMDBClient(LMDB_AUTHOR_FEATURE)
     idf = data_utils.load_data(global_dir, 'feature_idf.pkl')
-    graph_dir = join(settings.DATA_DIR, 'graph-{}'.format(idf_threshold))
+    # graph_dir = join(settings.DATA_DIR, 'graph-{}'.format(idf_threshold))
+    graph_dir = join(settings.DATA_DIR, 'graph-orig-emb-{}'.format(idf_threshold))
     os.makedirs(graph_dir, exist_ok=True)
     for i, name in enumerate(name_to_pubs_test):
         print(i, name)
@@ -99,5 +101,5 @@ def gen_local_data(idf_threshold=10):
 
 if __name__ == '__main__':
     # dump_inter_emb()
-    gen_local_data(idf_threshold=17)
+    gen_local_data(idf_threshold=20)
     print('done')
