@@ -2,17 +2,22 @@ from os.path import join
 import os
 import numpy as np
 from numpy.random import shuffle
+from global_.embedding import EmbeddingModel
 from global_.global_model import GlobalTripletModel
 from utils.eval_utils import get_hidden_output
 from utils.cache import LMDBClient
 from utils import data_utils
 from utils import settings
 
-IDF_THRESHOLD = 20
+# IDF_THRESHOLD = 20
+IDF_THRESHOLD = 10
+emb_model = EmbeddingModel.load('scopus')
+idf = data_utils.load_data(settings.GLOBAL_DIR, 'feature_idf.pkl')
 
 
 def dump_inter_emb():
-    LMDB_NAME = "author_100.emb.weighted"
+    # LMDB_NAME = "author_100.emb.weighted"
+    LMDB_NAME = "author.feature"
     lc_input = LMDBClient(LMDB_NAME)
     INTER_LMDB_NAME = 'author_triplets.emb'
     lc_inter = LMDBClient(INTER_LMDB_NAME)
@@ -29,7 +34,9 @@ def dump_inter_emb():
             if len(name_data[sid]) < 5:  # n_pubs of current author is too small
                 continue
             for year, pid in name_data[sid]:
-                cur_emb = lc_input.get(pid)
+                # cur_emb = lc_input.get(pid)
+                cur_feature = lc_input.get(pid)
+                cur_emb = emb_model.project_embedding(cur_feature, idf)
                 if cur_emb is None:
                     continue
                 embs_input.append(cur_emb)
@@ -43,12 +50,11 @@ def dump_inter_emb():
 def gen_local_data(idf_threshold=10):
     global_dir = join(settings.DATA_DIR, 'global')
     name_to_pubs_test = data_utils.load_data(global_dir, 'name_to_pubs_test_100.pkl')
-    # INTER_LMDB_NAME = 'author_triplets.emb'
-    INTER_LMDB_NAME = 'author_100.emb.weighted'
+    INTER_LMDB_NAME = 'author_triplets.emb'
+    # INTER_LMDB_NAME = 'author_100.emb.weighted'
     lc_inter = LMDBClient(INTER_LMDB_NAME)
-    LMDB_AUTHOR_FEATURE = "pub_authors.feature"
+    LMDB_AUTHOR_FEATURE = "author.feature"
     lc_feature = LMDBClient(LMDB_AUTHOR_FEATURE)
-    idf = data_utils.load_data(global_dir, 'feature_idf.pkl')
     graph_dir = join(settings.DATA_DIR, 'local', 'graph-{}'.format(idf_threshold))
     # graph_dir = join(settings.DATA_DIR, 'graph-orig-emb-{}'.format(idf_threshold))
     os.makedirs(graph_dir, exist_ok=True)

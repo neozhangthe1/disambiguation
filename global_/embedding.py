@@ -64,7 +64,8 @@ class EmbeddingModel(object):
             sum_weight += weight
         if len(vectors) == 0:
             print('all tokens not in w2v models')
-            return np.zeros(self.model.vector_size)
+            # return np.zeros(self.model.vector_size)
+            return None
         emb = np.sum(vectors, axis=0)
         # emb /= sum_weight
         return emb

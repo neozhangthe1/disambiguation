@@ -145,7 +145,9 @@ def dump_author_embs():
             cnt += 1
             pid_order = k[0].decode('utf-8')
             features = data_utils.deserialize_embedding(k[1])
-            lc_emb.set(pid_order, emb_model.project_embedding(features, idf))
+            cur_emb = emb_model.project_embedding(features, idf)
+            if cur_emb is not None:
+                lc_emb.set(pid_order, cur_emb)
             # lc_emb.set(pid_order, emb_model.project_embedding(features))
     '''
     for paper in data_utils.pubs_load_generator():
