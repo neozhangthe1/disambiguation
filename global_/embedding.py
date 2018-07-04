@@ -40,7 +40,7 @@ class EmbeddingModel(object):
                 # print(author_feature)
                 data.append(author_feature)
         model = Word2Vec(
-            data, size=size, window=50, min_count=5, workers=20,
+            data, size=size, window=5, min_count=5, workers=20,
         )
         model.save(join(settings.EMB_DIR, '{}.emb'.format(wf_name)))
 
@@ -63,6 +63,7 @@ class EmbeddingModel(object):
             vectors.append(v)
             sum_weight += weight
         if len(vectors) == 0:
+            print('all tokens not in w2v models')
             return np.zeros(self.model.vector_size)
         emb = np.sum(vectors, axis=0)
         emb /= sum_weight
