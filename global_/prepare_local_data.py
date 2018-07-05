@@ -102,11 +102,11 @@ def gen_local_data(idf_threshold=10):
                     idf_sum += idf.get(f, idf_threshold)
                     # print(f, idf.get(f, idf_threshold))
                 if idf_sum >= idf_threshold:
-                    wf_network.write('{}\t{}\n'.format(pids[i], pids[j]))
+                    wf_network.write('{}\t{}\n'.format(pids_filter[i], pids_filter[j]))
         wf_network.close()
 
 
 if __name__ == '__main__':
-    dump_inter_emb()
+    # dump_inter_emb()
     gen_local_data(idf_threshold=IDF_THRESHOLD)
     print('done')
