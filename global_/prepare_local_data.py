@@ -11,8 +11,6 @@ from utils import settings
 
 # IDF_THRESHOLD = 20
 IDF_THRESHOLD = 10
-emb_model = EmbeddingModel.load('scopus')
-idf = data_utils.load_data(settings.GLOBAL_DIR, 'feature_idf.pkl')
 
 
 def dump_inter_emb():
@@ -21,6 +19,8 @@ def dump_inter_emb():
     lc_input = LMDBClient(LMDB_NAME)
     INTER_LMDB_NAME = 'author_triplets.emb'
     lc_inter = LMDBClient(INTER_LMDB_NAME)
+    emb_model = EmbeddingModel.load('scopus')
+    idf = data_utils.load_data(settings.GLOBAL_DIR, 'feature_idf.pkl')
     global_model = GlobalTripletModel(data_scale=1000000)
     trained_global_model = global_model.load_triplets_model()
     global_dir = join(settings.DATA_DIR, 'global')
@@ -50,6 +50,7 @@ def dump_inter_emb():
 def gen_local_data(idf_threshold=10):
     global_dir = join(settings.DATA_DIR, 'global')
     name_to_pubs_test = data_utils.load_data(global_dir, 'name_to_pubs_test_100.pkl')
+    idf = data_utils.load_data(settings.GLOBAL_DIR, 'feature_idf.pkl')
     INTER_LMDB_NAME = 'author_triplets.emb'
     # INTER_LMDB_NAME = 'author_100.emb.weighted'
     lc_inter = LMDBClient(INTER_LMDB_NAME)
