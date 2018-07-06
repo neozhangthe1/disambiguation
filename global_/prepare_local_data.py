@@ -9,13 +9,13 @@ from utils.cache import LMDBClient
 from utils import data_utils
 from utils import settings
 
-# IDF_THRESHOLD = 20
-IDF_THRESHOLD = 10
+IDF_THRESHOLD = 20  # small data
+# IDF_THRESHOLD = 10
 
 
 def dump_inter_emb():
     # LMDB_NAME = "author_100.emb.weighted"
-    LMDB_NAME = "author.feature"
+    LMDB_NAME = "pub_authors.feature"
     lc_input = LMDBClient(LMDB_NAME)
     INTER_LMDB_NAME = 'author_triplets.emb'
     lc_inter = LMDBClient(INTER_LMDB_NAME)
@@ -54,7 +54,7 @@ def gen_local_data(idf_threshold=10):
     INTER_LMDB_NAME = 'author_triplets.emb'
     # INTER_LMDB_NAME = 'author_100.emb.weighted'
     lc_inter = LMDBClient(INTER_LMDB_NAME)
-    LMDB_AUTHOR_FEATURE = "author.feature"
+    LMDB_AUTHOR_FEATURE = "pub_authors.feature"
     lc_feature = LMDBClient(LMDB_AUTHOR_FEATURE)
     graph_dir = join(settings.DATA_DIR, 'local', 'graph-{}'.format(idf_threshold))
     # graph_dir = join(settings.DATA_DIR, 'graph-orig-emb-{}'.format(idf_threshold))
