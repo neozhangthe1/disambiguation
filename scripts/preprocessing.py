@@ -78,8 +78,8 @@ def dump_author_features_to_cache():
 
 
 def dump_author_features_to_file():
-    pubs_train = data_utils.load_data(global_dir, 'pubs_raw_train_500.pkl')
-    pubs_test = data_utils.load_data(global_dir, 'pubs_raw_test_100.pkl')
+    pubs_train = data_utils.load_data(global_dir, 'pubs_raw_train.pkl')
+    pubs_test = data_utils.load_data(global_dir, 'pubs_raw_test.pkl')
     pubs_dict = {**pubs_test, **pubs_train}
     print('n_papers', len(pubs_dict))
     wf = codecs.open(join(global_dir, 'author_features.txt'), 'w', encoding='utf-8')
