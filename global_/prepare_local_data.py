@@ -9,7 +9,7 @@ from utils.cache import LMDBClient
 from utils import data_utils
 from utils import settings
 
-IDF_THRESHOLD = 20  # small data
+IDF_THRESHOLD = 29  # small data
 # IDF_THRESHOLD = 10
 
 
