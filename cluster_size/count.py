@@ -1,13 +1,17 @@
 from os.path import join
-import codecs
-import json
 import numpy as np
 import keras.backend as K
+import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, LSTM
 from utils.cache import LMDBClient
 from utils import data_utils
 from utils import settings
+
+config = tf.ConfigProto(log_device_placement=True)
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
+K.set_session(sess)
 
 LMDB_NAME = "author_100.emb.weighted"
 lc = LMDBClient(LMDB_NAME)
