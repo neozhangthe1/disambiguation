@@ -67,7 +67,7 @@ class EmbeddingModel(object):
             # return np.zeros(self.model.vector_size)
             return None
         emb = np.sum(vectors, axis=0)
-        # emb /= sum_weight
+        emb /= sum_weight
         return emb
 
 
