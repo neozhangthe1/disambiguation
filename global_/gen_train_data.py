@@ -12,7 +12,7 @@ LMDB_NAME = "author_100.emb.weighted"  # name consistent
 # LMDB_NAME = "author.feature"  # name consistent
 lc = LMDBClient(LMDB_NAME)
 start_time = datetime.now()
-emb_model = EmbeddingModel.load('scopus')
+# emb_model = EmbeddingModel.load('scopus')
 
 
 class TripletsGenerator:

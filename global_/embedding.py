@@ -5,20 +5,21 @@ import numpy as np
 import random
 from utils.cache import LMDBClient
 from utils import data_utils
+from utils.data_utils import Singleton
 from utils import settings
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 EMB_DIM = 100
 
 
-class EmbeddingModel(object):
+@Singleton
+class EmbeddingModel:
 
     def __init__(self, name="scopus"):
         self.model = None
         self.name = name
 
-    @staticmethod
-    def train(wf_name, size=EMB_DIM):
+    def train(self, wf_name, size=EMB_DIM):
         data = []
         '''
         for i, paper in enumerate(data_utils.pubs_load_generator()):
@@ -39,16 +40,14 @@ class EmbeddingModel(object):
                 random.shuffle(author_feature)
                 # print(author_feature)
                 data.append(author_feature)
-        model = Word2Vec(
+        self.model = Word2Vec(
             data, size=size, window=5, min_count=5, workers=20,
         )
-        model.save(join(settings.EMB_DIR, '{}.emb'.format(wf_name)))
+        self.model.save(join(settings.EMB_DIR, '{}.emb'.format(wf_name)))
 
-    @staticmethod
-    def load(name):
-        e = EmbeddingModel()
-        e.model = Word2Vec.load(join(settings.EMB_DIR, '{}.emb'.format(name)))
-        return e
+    def load(self, name):
+        self.model = Word2Vec.load(join(settings.EMB_DIR, '{}.emb'.format(name)))
+        return self.model
 
     def project_embedding(self, tokens, idf=None):
         vectors = []
@@ -74,6 +73,7 @@ class EmbeddingModel(object):
 if __name__ == '__main__':
     # rf_path = join(settings.DATA_DIR, 'global', 'author_features.txt')
     wf_name = 'scopus'
-    EmbeddingModel.train(wf_name)
+    emb_model = EmbeddingModel.Instance()
+    emb_model.train(wf_name)
     # emb_model = EmbeddingModel.load('scopus')
     print('loaded')

@@ -124,7 +124,8 @@ def cal_feature_idf():
 
 
 def dump_author_embs():
-    emb_model = EmbeddingModel.load('scopus')
+    # emb_model = EmbeddingModel.load('scopus')
+    emb_model = EmbeddingModel.Instance()
     idf = data_utils.load_data(global_dir, 'feature_idf.pkl')
     print('idf loaded')
     LMDB_NAME_FEATURE = 'pub_authors.feature'
@@ -172,7 +173,8 @@ def dump_author_embs():
 if __name__ == '__main__':
     dump_author_features_to_file()
     dump_author_features_to_cache()
-    EmbeddingModel.train('scopus')
+    emb_model = EmbeddingModel.Instance()
+    emb_model.train('scopus')
     cal_feature_idf()
     dump_author_embs()
     print('done', datetime.now()-start_time)

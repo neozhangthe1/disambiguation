@@ -14,13 +14,13 @@ IDF_THRESHOLD = 29  # small data
 
 
 def dump_inter_emb():
-    # LMDB_NAME = "author_100.emb.weighted"
-    LMDB_NAME = "pub_authors.feature"
+    LMDB_NAME = "author_100.emb.weighted"
+    # LMDB_NAME = "pub_authors.feature"
     lc_input = LMDBClient(LMDB_NAME)
     INTER_LMDB_NAME = 'author_triplets.emb'
     lc_inter = LMDBClient(INTER_LMDB_NAME)
-    emb_model = EmbeddingModel.load('scopus')
-    idf = data_utils.load_data(settings.GLOBAL_DIR, 'feature_idf.pkl')
+    # emb_model = EmbeddingModel.load('scopus')
+    # idf = data_utils.load_data(settings.GLOBAL_DIR, 'feature_idf.pkl')
     global_model = GlobalTripletModel(data_scale=1000000)
     trained_global_model = global_model.load_triplets_model()
     global_dir = join(settings.DATA_DIR, 'global')
@@ -34,9 +34,9 @@ def dump_inter_emb():
             if len(name_data[sid]) < 5:  # n_pubs of current author is too small
                 continue
             for year, pid in name_data[sid]:
-                # cur_emb = lc_input.get(pid)
-                cur_feature = lc_input.get(pid)
-                cur_emb = emb_model.project_embedding(cur_feature, idf)
+                cur_emb = lc_input.get(pid)
+                # cur_feature = lc_input.get(pid)
+                # cur_emb = emb_model.project_embedding(cur_feature, idf)
                 if cur_emb is None:
                     continue
                 embs_input.append(cur_emb)
