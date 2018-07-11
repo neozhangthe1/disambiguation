@@ -3,16 +3,13 @@ import os
 import multiprocessing as mp
 import random
 from datetime import datetime
-from global_.embedding import EmbeddingModel
 from utils.cache import LMDBClient
 from utils import data_utils
 from utils import settings
 
-LMDB_NAME = "author_100.emb.weighted"  # name consistent
-# LMDB_NAME = "author.feature"  # name consistent
+LMDB_NAME = "author_100.emb.weighted"
 lc = LMDBClient(LMDB_NAME)
 start_time = datetime.now()
-# emb_model = EmbeddingModel.load('scopus')
 
 
 class TripletsGenerator:
@@ -26,16 +23,15 @@ class TripletsGenerator:
     pids_test = []
     n_triplets = 0
     batch_size = 100000
-    global_dir = join(settings.DATA_DIR, 'global')
 
     def __init__(self, train_scale=10000):
         self.prepare_data()
         self.save_size = train_scale
-        self.idf = data_utils.load_data(settings.GLOBAL_DIR, 'feature_idf.pkl')
+        self.idf = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'feature_idf.pkl')
 
     def prepare_data(self):
-        self.name2pubs_train = data_utils.load_data(self.global_dir, 'name_to_pubs_train_500.pkl')  # for test
-        self.name2pubs_test = data_utils.load_data(self.global_dir, 'name_to_pubs_test_100.pkl')
+        self.name2pubs_train = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'name_to_pubs_train_500.pkl')  # for test
+        self.name2pubs_test = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.pkl')
         self.names_train = self.name2pubs_train.keys()
         print('names train', len(self.names_train))
         self.names_test = self.name2pubs_test.keys()
@@ -108,7 +104,6 @@ class TripletsGenerator:
                                 return
         for j in range(N_PROC):
             task_q.put((None, None, None))
-        print('here1')
 
     def gen_emb_mp(self, task_q, emb_q):
         while True:
@@ -118,17 +113,9 @@ class TripletsGenerator:
             emb1 = lc.get(pid1)
             emb_pos = lc.get(pid_pos)
             emb_neg = lc.get(pid_neg)
-
-            # feature1 = lc.get(pid1)
-            # feature_pos = lc.get(pid_pos)
-            # feature_neg = lc.get(pid_neg)
-            # emb1 = emb_model.project_embedding(feature1, self.idf)
-            # emb_pos = emb_model.project_embedding(feature_pos, self.idf)
-            # emb_neg = emb_model.project_embedding(feature_neg, self.idf)
             if emb1 is not None and emb_pos is not None and emb_neg is not None:
                 emb_q.put((emb1, emb_pos, emb_neg))
         emb_q.put((False, False, False))
-        print('here2')
 
     def gen_triplets_mp(self, role='train'):
         N_PROC = 8
@@ -148,12 +135,10 @@ class TripletsGenerator:
                 print('get', cnt, datetime.now()-start_time)
             emb1, emb_pos, emb_neg = emb_q.get()
             if emb1 is False:
-                print('here3')
                 producer_p.terminate()
                 producer_p.join()
                 [p.terminate() for p in consumer_ps]
                 [p.join() for p in consumer_ps]
-                print('here4')
                 break
             cnt += 1
             yield (emb1, emb_pos, emb_neg)

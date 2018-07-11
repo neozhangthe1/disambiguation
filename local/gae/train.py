@@ -52,11 +52,9 @@ def gae_for_na(name):
     adj_orig.eliminate_zeros()
     adj_train = gen_train_edges(adj)
 
-    '''
     node_sim = np.dot(features, features.transpose())
     node_sim = (node_sim >= 1).astype(np.int)
     adj_train = sp.csr_matrix(adj_train + node_sim)
-    '''
 
     adj = adj_train
 
@@ -67,7 +65,7 @@ def gae_for_na(name):
     if FLAGS.is_sparse:  # TODO to test
         # features = sparse_to_tuple(features.tocoo())
         # features_nonzero = features[1].shape[0]
-        features = features.todense()  # TODO incorrect
+        features = features.todense()  # TODO
     else:
         features = normalize_vectors(features)
 
@@ -83,10 +81,8 @@ def gae_for_na(name):
     # Create model
     model = None
     if model_str == 'gcn_ae':
-        # model = GCNModelAE(placeholders, num_features, features_nonzero)
         model = GCNModelAE(placeholders, input_feature_dim)
     elif model_str == 'gcn_vae':
-        # model = GCNModelVAE(placeholders, num_features, num_nodes, features_nonzero)
         model = GCNModelVAE(placeholders, input_feature_dim, num_nodes)
     pos_weight = float(adj.shape[0] * adj.shape[0] - adj.sum()) / adj.sum()  # negative edges/pos edges
     print('positive edge weight', pos_weight)
@@ -118,12 +114,6 @@ def gae_for_na(name):
     def get_embs():
         feed_dict.update({placeholders['dropout']: 0})
         emb = sess.run(model.z_mean, feed_dict=feed_dict)  # z_mean is better
-        '''
-        if model_str == 'gcn_ae':
-            emb = sess.run(model.z_mean, feed_dict=feed_dict)
-        elif model_str == 'gcn_vae':
-            emb = sess.run(model.z, feed_dict=feed_dict)
-        '''
         return emb
 
     # Train model

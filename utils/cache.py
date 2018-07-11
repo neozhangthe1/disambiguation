@@ -16,7 +16,6 @@ class LMDBClient(object):
             self.db = lmdb.open(join(lmdb_dir, name), map_size=map_size, readonly=readonly)
         except Exception as e:
             print(e)
-            print('here')
 
     def get(self, key):
         with self.db.begin() as txn:

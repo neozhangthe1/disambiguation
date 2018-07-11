@@ -1,13 +1,9 @@
-from os.path import join
-from collections import defaultdict as dd
-import math
 from multiprocessing import Pool
 from datetime import datetime
 from itertools import chain
 from utils.cache import LMDBClient
 from utils import string_utils
 from utils import data_utils
-from utils import settings
 
 
 def transform_feature(data, f_name, k=1):
@@ -86,6 +82,3 @@ def dump_author_features():
         batch_papers.append(paper)
     pool.map(dump_batch_author_features, batch_papers)
     print('done')
-
-
-

@@ -65,7 +65,7 @@ def full_auc(model, test_triplets):
     inter_embs_anchor = get_hidden_output(model, embs_anchor)
     inter_embs_pos = get_hidden_output(model, embs_pos)
     inter_embs_neg = get_hidden_output(model, embs_neg)
-    print(inter_embs_pos.shape)
+    # print(inter_embs_pos.shape)
 
     accs = []
     accs_before = []

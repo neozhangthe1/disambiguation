@@ -15,7 +15,6 @@ K.set_session(sess)
 
 LMDB_NAME = "author_100.emb.weighted"
 lc = LMDBClient(LMDB_NAME)
-global_dir = join(settings.DATA_DIR, 'global')
 
 data_cache = {}
 
@@ -64,20 +63,16 @@ def sampler(clusters, k=300, batch_size=10, min=1, max=300, flatten=False):
         else:
             xs.append(np.stack(x))
         ys.append(num_clusters)
-    # print('train')
-    # print('-----------------')
-    # print(np.stack(xs).shape)
-    # print(np.stack(ys).shape)
     return np.stack(xs), np.stack(ys)
 
 
 def gen_train(clusters, k=300, batch_size=1000, flatten=False):
-    while True:  # stop?
+    while True:
         yield sampler(clusters, k, batch_size, flatten=flatten)
 
 
 def gen_test(k=300, flatten=False):
-    name_to_pubs_test = data_utils.load_data(global_dir, 'name_to_pubs_test_100.pkl')
+    name_to_pubs_test = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.pkl')
     xs, ys = [], []
     names = []
     for name in name_to_pubs_test:
@@ -101,14 +96,11 @@ def gen_test(k=300, flatten=False):
         ys.append(num_clusters)
     xs = np.stack(xs)
     ys = np.stack(ys)
-    # print('test')
-    # print(xs.shape)
-    # print(ys.shape)
     return names, xs, ys
 
 
 def run_rnn(k=300, seed=1106):
-    name_to_pubs_train = data_utils.load_data(global_dir, 'name_to_pubs_train_500.pkl')
+    name_to_pubs_train = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'name_to_pubs_train_500.pkl')
     test_names, test_x, test_y = gen_test(k)
     np.random.seed(seed)
     clusters = []

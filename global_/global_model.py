@@ -3,8 +3,8 @@ import os
 import numpy as np
 from keras import backend as K
 from keras.models import Model, model_from_json
-from keras.layers import Dense, concatenate, Input, merge, Lambda
-from keras.optimizers import Adagrad, Adam
+from keras.layers import Dense, Input, Lambda
+from keras.optimizers import Adam
 from global_.triplet import l2Norm, euclidean_distance, triplet_loss, accuracy
 from global_.embedding import EMB_DIM
 from utils import eval_utils

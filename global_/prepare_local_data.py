@@ -2,7 +2,6 @@ from os.path import join
 import os
 import numpy as np
 from numpy.random import shuffle
-from global_.embedding import EmbeddingModel
 from global_.global_model import GlobalTripletModel
 from utils.eval_utils import get_hidden_output
 from utils.cache import LMDBClient
@@ -15,16 +14,12 @@ IDF_THRESHOLD = 29  # small data
 
 def dump_inter_emb():
     LMDB_NAME = "author_100.emb.weighted"
-    # LMDB_NAME = "pub_authors.feature"
     lc_input = LMDBClient(LMDB_NAME)
     INTER_LMDB_NAME = 'author_triplets.emb'
     lc_inter = LMDBClient(INTER_LMDB_NAME)
-    # emb_model = EmbeddingModel.load('scopus')
-    # idf = data_utils.load_data(settings.GLOBAL_DIR, 'feature_idf.pkl')
     global_model = GlobalTripletModel(data_scale=1000000)
     trained_global_model = global_model.load_triplets_model()
-    global_dir = join(settings.DATA_DIR, 'global')
-    name_to_pubs_test = data_utils.load_data(global_dir, 'name_to_pubs_test_100.pkl')
+    name_to_pubs_test = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.pkl')
     for name in name_to_pubs_test:
         print('name', name)
         name_data = name_to_pubs_test[name]
@@ -35,8 +30,6 @@ def dump_inter_emb():
                 continue
             for year, pid in name_data[sid]:
                 cur_emb = lc_input.get(pid)
-                # cur_feature = lc_input.get(pid)
-                # cur_emb = emb_model.project_embedding(cur_feature, idf)
                 if cur_emb is None:
                     continue
                 embs_input.append(cur_emb)
@@ -48,16 +41,13 @@ def dump_inter_emb():
 
 
 def gen_local_data(idf_threshold=10):
-    global_dir = join(settings.DATA_DIR, 'global')
-    name_to_pubs_test = data_utils.load_data(global_dir, 'name_to_pubs_test_100.pkl')
-    idf = data_utils.load_data(settings.GLOBAL_DIR, 'feature_idf.pkl')
+    name_to_pubs_test = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.pkl')
+    idf = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'feature_idf.pkl')
     INTER_LMDB_NAME = 'author_triplets.emb'
-    # INTER_LMDB_NAME = 'author_100.emb.weighted'
     lc_inter = LMDBClient(INTER_LMDB_NAME)
     LMDB_AUTHOR_FEATURE = "pub_authors.feature"
     lc_feature = LMDBClient(LMDB_AUTHOR_FEATURE)
     graph_dir = join(settings.DATA_DIR, 'local', 'graph-{}'.format(idf_threshold))
-    # graph_dir = join(settings.DATA_DIR, 'graph-orig-emb-{}'.format(idf_threshold))
     os.makedirs(graph_dir, exist_ok=True)
     for i, name in enumerate(name_to_pubs_test):
         print(i, name)
