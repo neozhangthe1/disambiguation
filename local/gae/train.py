@@ -52,10 +52,6 @@ def gae_for_na(name):
     adj_orig.eliminate_zeros()
     adj_train = gen_train_edges(adj)
 
-    node_sim = np.dot(features, features.transpose())
-    node_sim = (node_sim >= 1).astype(np.int)
-    adj_train = sp.csr_matrix(adj_train + node_sim)
-
     adj = adj_train
 
     # Some preprocessing
