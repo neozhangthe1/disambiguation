@@ -10,10 +10,10 @@ Yutao Zhang, Fanjin Zhang, Peiran Yao, and Jie Tang. Name Disambiguation in AMin
 - install requirements via ```
 pip install -r requirements.txt``` 
 
-Note: Running this project will consume upwards of 10GB hard disk space. The data preparation will take several hours. You are recommended to run this project on a Linux server.
+Note: Running this project will consume upwards of 10GB hard disk space. The overall pipeline will take several hours. You are recommended to run this project on a Linux server.
 
 ## Data
-The data is currently located at 173 server /home/share/name-dis/data [**_TODO_**]. Please put the _data_ directory into project directory.
+Data are currently located at 173 server /home/share/name-dis/data [**_TODO_**]. Please put the _data_ directory into project directory.
 
 ## How to run
 ```bash
