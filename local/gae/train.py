@@ -44,6 +44,11 @@ start_time = time.time()
 
 
 def gae_for_na(name):
+    """
+    train and evaluate disambiguation results for a specific name
+    :param name:  author name
+    :return: evaluation results
+    """
     adj, features, labels = load_local_data(name=name)
 
     # Store original adjacency matrix (without diagonal entries) for later

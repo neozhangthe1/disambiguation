@@ -13,6 +13,9 @@ IDF_THRESHOLD = 29  # small data
 
 
 def dump_inter_emb():
+    """
+    dump hidden embedding via trained global model for local model to use
+    """
     LMDB_NAME = "author_100.emb.weighted"
     lc_input = LMDBClient(LMDB_NAME)
     INTER_LMDB_NAME = 'author_triplets.emb'
@@ -41,6 +44,10 @@ def dump_inter_emb():
 
 
 def gen_local_data(idf_threshold=10):
+    """
+    generate local data (including paper features and paper network) for each associated name
+    :param idf_threshold: threshold for determining whether there exists an edge between two papers (for this demo we set 29)
+    """
     name_to_pubs_test = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.pkl')
     idf = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'feature_idf.pkl')
     INTER_LMDB_NAME = 'author_triplets.emb'

@@ -11,6 +11,10 @@ LMDB_NAME = "author_100.emb.weighted"
 lc = LMDBClient(LMDB_NAME)
 start_time = datetime.now()
 
+"""
+This class generates triplets of author embeddings to train global model
+"""
+
 
 class TripletsGenerator:
     name2pubs_train = {}

@@ -21,13 +21,6 @@ class EmbeddingModel:
 
     def train(self, wf_name, size=EMB_DIM):
         data = []
-        '''
-        for i, paper in enumerate(data_utils.pubs_load_generator()):
-            if i % 100 == 0:
-                print('paper cnt', i)
-            for i, a in enumerate(paper.get('authors', [])):
-                author_feature = feature_utils.extract_author_features(paper, i)
-        '''
         LMDB_NAME = 'pub_authors.feature'
         lc = LMDBClient(LMDB_NAME)
         author_cnt = 0
@@ -50,6 +43,12 @@ class EmbeddingModel:
         return self.model
 
     def project_embedding(self, tokens, idf=None):
+        """
+        weighted average of token embeddings
+        :param tokens: input words
+        :param idf: IDF dictionary
+        :return: obtained weighted-average embedding
+        """
         vectors = []
         sum_weight = 0
         for token in tokens:
@@ -71,9 +70,7 @@ class EmbeddingModel:
 
 
 if __name__ == '__main__':
-    # rf_path = join(settings.DATA_DIR, 'global', 'author_features.txt')
     wf_name = 'scopus'
     emb_model = EmbeddingModel.Instance()
     emb_model.train(wf_name)
-    # emb_model = EmbeddingModel.load('scopus')
     print('loaded')

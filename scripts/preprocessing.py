@@ -13,6 +13,10 @@ start_time = datetime.now()
 
 
 def dump_author_features_to_file():
+    """
+    generate author features by raw publication data and dump to files
+    author features are defined by his/her paper attributes excluding the author's name
+    """
     pubs_train = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'pubs_raw_train.pkl')
     pubs_test = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'pubs_raw_test.pkl')
     pubs_dict = {**pubs_test, **pubs_train}
@@ -37,6 +41,9 @@ def dump_author_features_to_file():
 
 
 def dump_author_features_to_cache():
+    """
+    dump author features to lmdb
+    """
     LMDB_NAME = 'pub_authors.feature'
     lc = LMDBClient(LMDB_NAME)
     with codecs.open(join(settings.GLOBAL_DATA_DIR, 'author_features.txt'), 'r', encoding='utf-8') as rf:
@@ -50,6 +57,9 @@ def dump_author_features_to_cache():
 
 
 def cal_feature_idf():
+    """
+    calculate word IDF (Inverse document frequency) via publication data
+    """
     feature_dir = join(settings.DATA_DIR, 'global')
     counter = dd(int)
     cnt = 0
@@ -72,6 +82,10 @@ def cal_feature_idf():
 
 
 def dump_author_embs():
+    """
+    dump author embedding to lmdb
+    author embedding is calculated by weighted-average of word vectors with IDF
+    """
     emb_model = EmbeddingModel.Instance()
     idf = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'feature_idf.pkl')
     print('idf loaded')
@@ -93,10 +107,13 @@ def dump_author_embs():
 
 
 if __name__ == '__main__':
+    """
+    some pre-processing
+    """
     dump_author_features_to_file()
     dump_author_features_to_cache()
     emb_model = EmbeddingModel.Instance()
-    emb_model.train('scopus')
+    emb_model.train('scopus')  # training word embedding model
     cal_feature_idf()
     dump_author_embs()
     print('done', datetime.now()-start_time)

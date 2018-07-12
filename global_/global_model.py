@@ -11,6 +11,10 @@ from utils import eval_utils
 from utils import data_utils
 from utils import settings
 
+"""
+global metric learning model
+"""
+
 
 class GlobalTripletModel:
 
