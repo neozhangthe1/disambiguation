@@ -11,6 +11,11 @@ def load_json(rfdir, rfname):
         return json.load(rf)
 
 
+def dump_json(obj, wfpath, wfname, indent=True):
+    with codecs.open(join(wfpath, wfname), 'w', encoding='utf-8') as wf:
+        json.dump(obj, wf, ensure_ascii=False, indent=indent)
+
+
 def dump_data(obj, wfpath, wfname):
     with open(os.path.join(wfpath, wfname), 'wb') as wf:
         pickle.dump(obj, wf)
