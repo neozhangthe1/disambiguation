@@ -27,13 +27,13 @@ def dump_author_features_to_file():
         if "title" not in paper or "authors" not in paper:
             continue
         if len(paper["authors"]) > 30:
-            print(i, paper["id"], len(paper["authors"]))
+            print(i, pid, len(paper["authors"]))
         if len(paper["authors"]) > 100:
             continue
         n_authors = len(paper.get('authors', []))
         for j in range(n_authors):
             author_feature = feature_utils.extract_author_features(paper, j)
-            aid = '{}-{}'.format(paper['id'], j)
+            aid = '{}-{}'.format(pid, j)
             wf.write(aid + '\t' + ' '.join(author_feature) + '\n')
     wf.close()
 
