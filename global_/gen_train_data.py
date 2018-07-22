@@ -34,8 +34,8 @@ class TripletsGenerator:
         self.idf = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'feature_idf.pkl')
 
     def prepare_data(self):
-        self.name2pubs_train = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'name_to_pubs_train_500.pkl')  # for test
-        self.name2pubs_test = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.pkl')
+        self.name2pubs_train = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_train_500.json')  # for test
+        self.name2pubs_test = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.json')
         self.names_train = self.name2pubs_train.keys()
         print('names train', len(self.names_train))
         self.names_test = self.name2pubs_test.keys()
