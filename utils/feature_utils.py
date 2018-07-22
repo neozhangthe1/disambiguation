@@ -19,11 +19,12 @@ def transform_feature(data, f_name, k=1):
 def extract_common_features(item):
     title_features = transform_feature(string_utils.clean_sentence(item["title"], stemming=True).lower(), "title")
     keywords_features = []
-    keywords = item.get("keywords", "")
-    if len(keywords) > 3:
-        keywords_features = transform_feature([string_utils.clean_name(k) for k in item["keywords"].split(";")], 'keyword')
+    keywords = item.get("keywords")
+    if keywords:
+        keywords_features = transform_feature([string_utils.clean_name(k) for k in keywords], 'keyword')
+        print(keywords_features)
     venue_features = []
-    venue_name = item.get('venue', {}).get("raw", "")
+    venue_name = item.get('venue', '')
     if len(venue_name) > 2:
         venue_features = transform_feature(string_utils.clean_sentence(venue_name.lower()), "venue")
     return title_features, keywords_features, venue_features
@@ -58,27 +59,3 @@ def extract_author_features(item, order=None):
         )
     author_features = list(chain.from_iterable(author_features))
     return author_features
-
-
-def dump_batch_author_features(paper):
-    LMDB_NAME = 'pub_authors.feature'
-    lc = LMDBClient(LMDB_NAME)
-    n_authors = len(paper.get('authors', []))
-    author_features = [extract_author_features(paper, j) for j in range(n_authors)]
-    for j in range(n_authors):
-        lc.set('{}-{}'.format(paper['sid'], j), author_features[j])
-
-
-def dump_author_features():
-    pool = Pool(32)
-    batch_papers = []
-    start_time = datetime.now()
-    for i, paper in enumerate(data_utils.pubs_load_generator()):
-        if i % 100 == 0:
-            print('paper cnt', i, datetime.now()-start_time)
-        if len(batch_papers) % 100 == 0:
-            pool.map(dump_batch_author_features, batch_papers)
-            batch_papers = []
-        batch_papers.append(paper)
-    pool.map(dump_batch_author_features, batch_papers)
-    print('done')
