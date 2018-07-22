@@ -22,16 +22,16 @@ def dump_inter_emb():
     lc_inter = LMDBClient(INTER_LMDB_NAME)
     global_model = GlobalTripletModel(data_scale=1000000)
     trained_global_model = global_model.load_triplets_model()
-    name_to_pubs_test = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.pkl')
+    name_to_pubs_test = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.json')
     for name in name_to_pubs_test:
         print('name', name)
         name_data = name_to_pubs_test[name]
         embs_input = []
         pids = []
-        for i, sid in enumerate(name_data.keys()):
-            if len(name_data[sid]) < 5:  # n_pubs of current author is too small
+        for i, aid in enumerate(name_data.keys()):
+            if len(name_data[aid]) < 5:  # n_pubs of current author is too small
                 continue
-            for year, pid in name_data[sid]:
+            for pid in name_data[aid]:
                 cur_emb = lc_input.get(pid)
                 if cur_emb is None:
                     continue
@@ -65,12 +65,12 @@ def gen_local_data(idf_threshold=10):
 
         # generate content
         wf_content = open(join(graph_dir, '{}_pubs_content.txt'.format(name)), 'w')
-        for i, sid in enumerate(cur_person_dict):
-            items = cur_person_dict[sid]
+        for i, aid in enumerate(cur_person_dict):
+            items = cur_person_dict[aid]
             if len(items) < 5:
                 continue
-            for year, pid in items:
-                pids2label[pid] = sid
+            for pid in items:
+                pids2label[pid] = aid
                 pids.append(pid)
         shuffle(pids)
         for pid in pids:
