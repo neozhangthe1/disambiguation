@@ -15,7 +15,7 @@ EMB_DIM = 100
 @Singleton
 class EmbeddingModel:
 
-    def __init__(self, name="scopus"):
+    def __init__(self, name="aminer"):
         self.model = None
         self.name = name
 
@@ -70,7 +70,7 @@ class EmbeddingModel:
 
 
 if __name__ == '__main__':
-    wf_name = 'scopus'
+    wf_name = 'aminer'
     emb_model = EmbeddingModel.Instance()
     emb_model.train(wf_name)
     print('loaded')

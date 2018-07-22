@@ -17,9 +17,7 @@ def dump_author_features_to_file():
     generate author features by raw publication data and dump to files
     author features are defined by his/her paper attributes excluding the author's name
     """
-    pubs_train = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'pubs_raw_train.pkl')
-    pubs_test = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'pubs_raw_test.pkl')
-    pubs_dict = {**pubs_test, **pubs_train}
+    pubs_dict = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'pubs_raw.json')
     print('n_papers', len(pubs_dict))
     wf = codecs.open(join(settings.GLOBAL_DATA_DIR, 'author_features.txt'), 'w', encoding='utf-8')
     for i, pid in enumerate(pubs_dict):
@@ -29,13 +27,13 @@ def dump_author_features_to_file():
         if "title" not in paper or "authors" not in paper:
             continue
         if len(paper["authors"]) > 30:
-            print(i, paper["sid"], len(paper["authors"]))
+            print(i, paper["id"], len(paper["authors"]))
         if len(paper["authors"]) > 100:
             continue
         n_authors = len(paper.get('authors', []))
         for j in range(n_authors):
             author_feature = feature_utils.extract_author_features(paper, j)
-            aid = '{}-{}'.format(paper['sid'], j)
+            aid = '{}-{}'.format(paper['id'], j)
             wf.write(aid + '\t' + ' '.join(author_feature) + '\n')
     wf.close()
 
@@ -58,7 +56,7 @@ def dump_author_features_to_cache():
 
 def cal_feature_idf():
     """
-    calculate word IDF (Inverse document frequency) via publication data
+    calculate word IDF (Inverse document frequency) using publication data
     """
     feature_dir = join(settings.DATA_DIR, 'global')
     counter = dd(int)
@@ -113,7 +111,7 @@ if __name__ == '__main__':
     dump_author_features_to_file()
     dump_author_features_to_cache()
     emb_model = EmbeddingModel.Instance()
-    emb_model.train('scopus')  # training word embedding model
+    emb_model.train('aminer')  # training word embedding model
     cal_feature_idf()
     dump_author_embs()
     print('done', datetime.now()-start_time)
