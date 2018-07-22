@@ -43,16 +43,16 @@ class TripletsGenerator:
         assert not set(self.names_train).intersection(set(self.names_test))
         for name in self.names_train:
             name_pubs_dict = self.name2pubs_train[name]
-            for sid in name_pubs_dict:
-                self.pids_train += [item[1] for item in name_pubs_dict[sid]]
+            for aid in name_pubs_dict:
+                self.pids_train += name_pubs_dict[aid]
         random.shuffle(self.pids_train)
         self.n_pubs_train = len(self.pids_train)
         print('pubs2train', self.n_pubs_train)
 
         for name in self.names_test:
             name_pubs_dict = self.name2pubs_test[name]
-            for sid in name_pubs_dict:
-                self.pids_test += [item[1] for item in name_pubs_dict[sid]]
+            for aid in name_pubs_dict:
+                self.pids_test += name_pubs_dict[aid]
         random.shuffle(self.pids_test)
         self.n_pubs_test = len(self.pids_test)
         print('pubs2test', self.n_pubs_test)
@@ -79,11 +79,11 @@ class TripletsGenerator:
             self.save_size = 200000  # test save size
         for name in names:
             name_pubs_dict = name2pubs[name]
-            for sid in name_pubs_dict:
-                pub_items = name_pubs_dict[sid]
+            for aid in name_pubs_dict:
+                pub_items = name_pubs_dict[aid]
                 if len(pub_items) == 1:
                     continue
-                pids = [item[1] for item in pub_items]
+                pids = pub_items
                 cur_n_pubs = len(pids)
                 random.shuffle(pids)
                 for i in range(cur_n_pubs):
