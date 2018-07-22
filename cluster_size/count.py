@@ -81,7 +81,7 @@ def gen_test(k=300, flatten=False):
         x = []
         items = []
         for c in name_to_pubs_test[name]:  # one person
-            for y, item in name_to_pubs_test[name][c]:
+            for item in name_to_pubs_test[name][c]:
                 items.append(item)
         sampled_points = [items[p] for p in np.random.choice(len(items), k, replace=True)]
         for p in sampled_points:
@@ -106,7 +106,7 @@ def run_rnn(k=300, seed=1106):
     clusters = []
     for domain in name_to_pubs_train.values():
         for cluster in domain.values():
-            clusters.append([pid for y, pid in cluster])
+            clusters.append(cluster)
     for i, c in enumerate(clusters):
         if i % 100 == 0:
             print(i, len(c), len(clusters))
