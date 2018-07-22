@@ -35,14 +35,6 @@ def deserialize_embedding(s):
     return pickle.loads(s)
 
 
-def pubs_load_generator():
-    pubs_train = load_data(settings.GLOBAL_DATA_DIR, 'pubs_raw_train.pkl')
-    pubs_test = load_data(settings.GLOBAL_DATA_DIR, 'pubs_raw_test.pkl')
-    pubs_dict = {**pubs_test, **pubs_train}
-    for pid in pubs_dict:
-        yield pubs_dict[pid]
-
-
 class Singleton:
     """
     A non-thread-safe helper class to ease implementing singletons.

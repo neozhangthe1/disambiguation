@@ -72,7 +72,7 @@ def gen_train(clusters, k=300, batch_size=1000, flatten=False):
 
 
 def gen_test(k=300, flatten=False):
-    name_to_pubs_test = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.pkl')
+    name_to_pubs_test = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_test_100.json')
     xs, ys = [], []
     names = []
     for name in name_to_pubs_test:
@@ -100,7 +100,7 @@ def gen_test(k=300, flatten=False):
 
 
 def run_rnn(k=300, seed=1106):
-    name_to_pubs_train = data_utils.load_data(settings.GLOBAL_DATA_DIR, 'name_to_pubs_train_500.pkl')
+    name_to_pubs_train = data_utils.load_json(settings.GLOBAL_DATA_DIR, 'name_to_pubs_train_500.json')
     test_names, test_x, test_y = gen_test(k)
     np.random.seed(seed)
     clusters = []
