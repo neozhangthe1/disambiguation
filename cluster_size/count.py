@@ -3,7 +3,7 @@ import numpy as np
 import keras.backend as K
 import tensorflow as tf
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, LSTM
+from keras.layers import Dense, Dropout, LSTM, Bidirectional
 from utils.cache import LMDBClient
 from utils import data_utils
 from utils import settings
@@ -31,7 +31,7 @@ def root_mean_log_squared_error(y_true, y_pred):
 
 def create_model():
     model = Sequential()
-    model.add(LSTM(128, input_shape=(300, 100)))
+    model.add(Bidirectional(LSTM(128, input_shape=(300, 100))))
     model.add(Dropout(0.5))
     model.add(Dense(1))
 
