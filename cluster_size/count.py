@@ -31,7 +31,7 @@ def root_mean_log_squared_error(y_true, y_pred):
 
 def create_model():
     model = Sequential()
-    model.add(Bidirectional(LSTM(128, input_shape=(300, 100))))
+    model.add(Bidirectional(LSTM(64), input_shape=(300, 100)))
     model.add(Dropout(0.5))
     model.add(Dense(1))
 
