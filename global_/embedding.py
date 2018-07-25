@@ -49,6 +49,9 @@ class EmbeddingModel:
         :param idf: IDF dictionary
         :return: obtained weighted-average embedding
         """
+        if self.model is None:
+            self.load(self.name)
+            print('{} embedding model loaded'.format(self.name))
         vectors = []
         sum_weight = 0
         for token in tokens:
