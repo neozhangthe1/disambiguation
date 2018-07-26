@@ -33,7 +33,7 @@ def extract_author_features(item, order=None):
     title_features, keywords_features, venue_features = extract_common_features(item)
     author_features = []
     for i, author in enumerate(item["authors"]):
-        if order and i != order:
+        if order is not None and i != order:
             continue
         name_feature = []
         org_features = []
