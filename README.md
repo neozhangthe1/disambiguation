@@ -13,7 +13,7 @@ pip install -r requirements.txt```
 Note: Running this project will consume upwards of 10GB hard disk space. The overall pipeline will take several hours. You are recommended to run this project on a Linux server.
 
 ## Data
-Data are currently located at 173 server /home/share/name-dis/data [**_TODO_**]. Please put the _data_ directory into project directory.
+Data will be publicly avaliable soon.
 
 ## How to run
 ```bash
