@@ -13,7 +13,7 @@ pip install -r requirements.txt```
 Note: Running this project will consume upwards of 10GB hard disk space. The overall pipeline will take several hours. You are recommended to run this project on a Linux server.
 
 ## Data
-Data will be publicly avaliable soon.
+Please download data [here](https://static.aminer.cn/misc/na-data-kdd18.zip). Unzip the file and put the _data_ directory into project directory.
 
 ## How to run
 ```bash
