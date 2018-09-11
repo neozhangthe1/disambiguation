@@ -20,7 +20,7 @@ from local.gae.preprocessing import preprocess_graph, construct_feed_dict, \
     sparse_to_tuple, normalize_vectors, gen_train_edges, cal_pos_weight
 from utils.cluster import clustering
 from utils.data_utils import load_json
-from utils.eval_utils import pairwise_precision_recall_f1
+from utils.eval_utils import pairwise_precision_recall_f1, cal_f1
 from utils import settings
 
 # Settings
@@ -165,12 +165,17 @@ def main():
         for i, m in enumerate(cur_metric):
             metrics[i] += m
         cnt += 1
-        print('average until now', metrics / cnt)
+        macro_prec = metrics[0] / cnt
+        macro_rec = metrics[1] / cnt
+        macro_f1 = cal_f1(macro_prec, macro_rec)
+        print('average until now', [macro_prec, macro_rec, macro_f1])
         time_acc = time.time()-start_time
         print(cnt, 'names', time_acc, 'avg time', time_acc/cnt)
-    metrics = metrics/len(names)
+    macro_prec = metrics[0] / cnt
+    macro_rec = metrics[1] / cnt
+    macro_f1 = cal_f1(macro_prec, macro_rec)
     wf.write('average,,,{0:.5f},{1:.5f},{2:.5f}\n'.format(
-        metrics[0], metrics[1], metrics[2]))
+        macro_prec, macro_rec, macro_f1))
     wf.close()
 
 
